@@ -1,0 +1,237 @@
+[
+  {
+    "type": "record",
+    "name": "translation",
+    "namespace": "marketplace.ecommerce.entity",
+    "fields": [
+      {
+        "name": "locale",
+        "type": "string"
+      },
+      {
+        "name": "name",
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "item_variant",
+    "namespace": "marketplace.ecommerce.entity",
+    "fields": [
+      {
+        "name": "id",
+        "type": "int"
+      },
+      {
+        "name": "code",
+        "type": "string"
+      },
+      {
+        "name": "translations",
+        "type": {
+          "type": "array",
+          "items": "marketplace.ecommerce.entity.translation"
+        },
+        "default": []
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "order_item",
+    "namespace": "marketplace.ecommerce.entity",
+    "fields": [
+      {
+        "name": "id",
+        "type": "int"
+      },
+      {
+        "name": "quantity",
+        "type": "int"
+      },
+      {
+        "name": "unitPrice",
+        "type": "double"
+      },
+      {
+        "name": "total",
+        "type": "double"
+      },
+      {
+        "name": "unitsTotal",
+        "type": [
+          "null",
+          "double"
+        ],
+        "default": null
+      },
+      {
+        "name": "variant",
+        "type": "marketplace.ecommerce.entity.item_variant"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "promotion_coupon",
+    "namespace": "marketplace.ecommerce.entity",
+    "fields": [
+      {
+        "name": "code",
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "address",
+    "namespace": "marketplace.ecommerce.entity",
+    "fields": [
+      {
+        "name": "id",
+        "type": "int"
+      },
+      {
+        "name": "firstName",
+        "type": "string"
+      },
+      {
+        "name": "lastName",
+        "type": "string"
+      },
+      {
+        "name": "phoneNumber",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "company",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "countryCode",
+        "type": "string"
+      },
+      {
+        "name": "provinceCode",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "provinceName",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "street",
+        "type": "string"
+      },
+      {
+        "name": "city",
+        "type": "string"
+      },
+      {
+        "name": "postcode",
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "user",
+    "namespace": "marketplace.ecommerce.entity",
+    "fields": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "username",
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "account",
+    "namespace": "marketplace.ecommerce.entity",
+    "fields": [
+      {
+        "name": "id",
+        "type": "int"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "order",
+    "namespace": "marketplace.ecommerce.entity",
+    "fields": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "orderNumber",
+        "type": "string"
+      },
+      {
+        "name": "account",
+        "type": "marketplace.ecommerce.entity.account"
+      },
+      {
+        "name": "user",
+        "type": "marketplace.ecommerce.entity.user"
+      },
+      {
+        "name": "checkoutCompletedAt",
+        "type": "string"
+      },
+      {
+        "name": "shippingAddress",
+        "type": "marketplace.ecommerce.entity.address"
+      },
+      {
+        "name": "billingAddress",
+        "type": "marketplace.ecommerce.entity.address"
+      },
+      {
+        "name": "promotionCoupon",
+        "type": [
+          "null",
+          "marketplace.ecommerce.entity.promotion_coupon"
+        ],
+        "default": null
+      },
+      {
+        "name": "items",
+        "type": {
+          "type": "array",
+          "items": "marketplace.ecommerce.entity.order_item"
+        }
+      },
+      {
+        "name": "itemsTotal",
+        "type": "double"
+      },
+      {
+        "name": "total",
+        "type": "double"
+      }
+    ]
+  }
+]

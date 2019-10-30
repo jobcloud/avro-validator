@@ -1,0 +1,8 @@
+{
+  "name": "jobcloud/avro-validator",
+  "autoload": {
+    "psr-4": {
+      "Jobcloud\\Avro\\Validator\\": "src/"
+    }
+  }
+}

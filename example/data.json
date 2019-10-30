@@ -1,0 +1,65 @@
+{
+  "id": 1,
+  "orderNumber": "000000001",
+  "account": {
+    "id": "146afae7-2999-4589-b0c1-58da3c86ceb2"
+  },
+  "user": {
+    "id": "9ffd059d-ffb7-4b3e-8991-064c263a55b2",
+    "username": "john.doe@jobcloud.ch"
+  },
+  "checkoutCompletedAt": "2019-10-29T14:31:40+01:00",
+  "shippingAddress": {
+    "id": 1,
+    "firstName": "Sherlock",
+    "lastName": "Holmes",
+    "phoneNumber": null,
+    "company": null,
+    "countryCode": "GB",
+    "provinceCode": null,
+    "provinceName": "Greater London",
+    "street": "Baker Street 221b",
+    "city": "London",
+    "postcode": "NWB"
+  },
+  "billingAddress": {
+    "id": 2,
+    "firstName": "Sherlock",
+    "lastName": "Holmes",
+    "phoneNumber": null,
+    "company": null,
+    "countryCode": "GB",
+    "provinceCode": null,
+    "provinceName": "Greater London",
+    "street": "Baker Street 221b",
+    "city": "London",
+    "postcode": "NWB"
+  },
+  "promotionCoupon": null,
+  "items": [
+    {
+      "id": 1,
+      "quantity": 5,
+      "unitPrice": 1999,
+      "total": 9995,
+      "unitsTotal": null,
+      "variant": {
+        "id": 10,
+        "code": "LOGAN_MUG_CODE",
+        "translations": [
+          {
+            "locale": "de_DE",
+            "name": "Logan Becher"
+          },
+          {
+            "locale": "en_GB",
+            "name": "Logan Mug"
+          }
+        ]
+      }
+    }
+  ],
+  "itemsTotal": 9995,
+  "total": 9995,
+  "translation": []
+}
