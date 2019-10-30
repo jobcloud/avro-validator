@@ -40,24 +40,27 @@ final class Validator implements ValidatorInterface
     {
         foreach ($schemaFields as $rule) {
             $fieldName = $rule['name'];
-            $types = isset($rule['type']['type']) ? [$rule['type']] : (array) $rule['type'];
 
             if (false === array_key_exists($fieldName, $payload)) {
+                echo 'something is missing';
                 $validationErrors[] = [
                     'path' => $path,
-                    'message' => sprintf('Field "%s" missing in payload (path: %s)', $fieldName, $path),
+                    'message' => sprintf('Field "%s" missing in payload', $fieldName),
                 ];
+                continue;
             }
 
+            $types = isset($rule['type']['type']) ? [$rule['type']] : (array) $rule['type'];
             $fieldValue = $payload[$fieldName];
             $currentPath = $path . '.' . $fieldName;
 
             if (false === $this->checkFieldValueBeOneOf($types, $fieldValue, $currentPath, $validationErrors)) {
                 $validationErrors[] = [
                     'path' => $currentPath,
-                    'message' => sprintf('Field value is not any of type: %s', implode(', ', $types)),
+                    'message' => sprintf('Field value is not any of: %s', implode(', ', $types)),
                     'value' => $fieldValue,
                 ];
+                continue;
             }
         }
 
