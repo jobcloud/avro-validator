@@ -33,10 +33,19 @@ final class Validator implements ValidatorInterface
             throw new \RuntimeException(sprintf('Could not find record of type %s', $recordType));
         }
 
-        return $this->validateFields($recordSchema['fields'], $decodedPayload, '$', []);
+        $validationErrors = [];
+
+        return $this->validateFields($recordSchema['fields'], $decodedPayload, '$', $validationErrors);
     }
 
-    private function validateFields(array $schemaFields, array $payload, string $path, array $validationErrors): array
+    /**
+     * @param array $schemaFields
+     * @param array $payload
+     * @param string $path
+     * @param array $validationErrors
+     * @return array
+     */
+    private function validateFields(array $schemaFields, array $payload, string $path, array &$validationErrors): array
     {
         foreach ($schemaFields as $rule) {
             $fieldName = $rule['name'];
@@ -67,8 +76,19 @@ final class Validator implements ValidatorInterface
         return $validationErrors;
     }
 
-    private function checkFieldValueBeOneOf(array $types, $fieldValue, string $currentPath, array $validationErrors): bool
-    {
+    /**
+     * @param array $types
+     * @param $fieldValue
+     * @param string $currentPath
+     * @param array $validationErrors
+     * @return bool
+     */
+    private function checkFieldValueBeOneOf(
+        array $types,
+        $fieldValue,
+        string $currentPath,
+        array &$validationErrors
+    ): bool {
         foreach ($types as $type) {
             if ('null' === $type && null === $fieldValue) {
                 return true;
@@ -90,7 +110,12 @@ final class Validator implements ValidatorInterface
                 $recordSchema = $this->recordRegistry->getRecord($type['items']);
 
                 foreach ($fieldValue as $key => $value) {
-                    $this->validateFields($recordSchema['fields'], $value, $currentPath . '['.$key.']', $validationErrors);
+                    $this->validateFields(
+                        $recordSchema['fields'],
+                        $value,
+                        $currentPath . '['.$key.']',
+                        $validationErrors
+                    );
                 }
                 return true;
             }
