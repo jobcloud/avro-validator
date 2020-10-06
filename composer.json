@@ -1,5 +1,11 @@
 {
   "name": "jobcloud/avro-validator",
+  "license": "MIT",
+  "require": {
+    "php": ">=7.3",
+    "ext-json": "*",
+    "symfony/console": "^5.1.5"
+  },
   "autoload": {
     "psr-4": {
       "Jobcloud\\Avro\\Validator\\": "src/"

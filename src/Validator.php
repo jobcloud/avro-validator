@@ -30,7 +30,7 @@ final class Validator implements ValidatorInterface
         $decodedPayload = json_decode($payload, true);
 
         if (null === $recordSchema = $this->recordRegistry->getRecord($recordType)) {
-            throw new \RuntimeException(sprintf('Could not find record of type %s', $recordType));
+            throw new \RuntimeException(sprintf('Could not find record of type "%s"', $recordType));
         }
 
         $validationErrors = [];
@@ -54,7 +54,7 @@ final class Validator implements ValidatorInterface
                 echo 'something is missing';
                 $validationErrors[] = [
                     'path' => $path,
-                    'message' => sprintf('Field "%s" missing in payload', $fieldName),
+                    'message' => sprintf('Field "%s" is missing in payload', $fieldName),
                 ];
                 continue;
             }
@@ -66,7 +66,11 @@ final class Validator implements ValidatorInterface
             if (false === $this->checkFieldValueBeOneOf($types, $fieldValue, $currentPath, $validationErrors)) {
                 $validationErrors[] = [
                     'path' => $currentPath,
-                    'message' => sprintf('Field value is not any of: %s', implode(', ', $types)),
+                    'message' => sprintf(
+                        'Field value was expected to be of type %s, but was "%s"',
+                        $this->formatTypeList($types),
+                        gettype($fieldValue)
+                    ),
                     'value' => $fieldValue,
                 ];
                 continue;
@@ -74,6 +78,17 @@ final class Validator implements ValidatorInterface
         }
 
         return $validationErrors;
+    }
+
+    private function formatTypeList(array $types): string
+    {
+        $lastEntry = array_pop($types);
+
+        if (0 === count($types)) {
+            return sprintf('"%s"', $lastEntry);
+        }
+
+        return sprintf('"%s" or "%s"', implode('", "', $types), $lastEntry);
     }
 
     /**

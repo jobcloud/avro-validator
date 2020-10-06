@@ -1,0 +1,19 @@
+#!/usr/bin/php
+<?php
+
+declare(strict_types=1);
+
+namespace Jobcloud\AvroValidator;
+
+use Jobcloud\Avro\Validator\Command\ValidateCommand;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
+
+require __DIR__ . '/../vendor/autoload.php';
+
+$app = new Application('Avro validator', '1.0');
+
+$app->add(new ValidateCommand());
+
+$app->run(new ArgvInput(), new ConsoleOutput());

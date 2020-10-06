@@ -13,6 +13,6 @@ $recordRegistry = RecordRegistry::fromSchema(file_get_contents(__DIR__ . '/schem
 $validator = new Validator($recordRegistry);
 
 var_dump($validator->validate(
-    file_get_contents(__DIR__ . '/data.json'),
+    file_get_contents(__DIR__ . '/data-wrong.json'),
     'marketplace.ecommerce.entity.order'
 ));

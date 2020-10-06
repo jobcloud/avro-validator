@@ -1,0 +1,71 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Jobcloud\Avro\Validator\Command\Formatter;
+
+use Symfony\Component\Console\Output\OutputInterface;
+
+final class PrettyFormatter implements FormatterInterface
+{
+    /**
+     * @var OutputInterface
+     */
+    private $output;
+
+    /**
+     * @var string
+     */
+    private $schemaNamespace;
+
+    /**
+     * @var string
+     */
+    private $schemaPath;
+
+    /**
+     * @var string
+     */
+    private $payloadPath;
+
+    public function __construct(
+        OutputInterface $output,
+        string $schemaNamespace,
+        string $schemaPath,
+        string $payloadPath
+    ) {
+        $this->output = $output;
+        $this->schemaNamespace = $schemaNamespace;
+        $this->schemaPath = $schemaPath;
+        $this->payloadPath = $payloadPath;
+    }
+
+    public function formatSuccess(array $result): void
+    {
+        $this->output->writeln(sprintf(
+            'Validation of payload was successful against schema with namespace <info>%s</info>.',
+            $this->schemaNamespace
+        ));
+    }
+
+    public function formatFail(array $result): void
+    {
+        $this->output->writeln(sprintf(
+            'There were <info>%d</info> errors during validation of payload against schema with namespace <info>%s</info>:',
+            count($result),
+            $this->schemaNamespace
+        ));
+
+        foreach ($result as $error) {
+            $this->output->writeln('');
+            $this->output->writeln(sprintf(' - Field: <info>%s</info>',
+                $error['path']
+            ));
+            $this->output->writeln(sprintf('   Message: %s', $error['message']));
+            $this->output->writeln(sprintf(
+                '   Value: <comment>%s</comment>',
+                is_string($error['value']) ? sprintf('"%s"', $error['value']) : $error['value']
+            ));
+        }
+    }
+}
