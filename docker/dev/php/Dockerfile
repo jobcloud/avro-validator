@@ -28,6 +28,11 @@ RUN echo "$HOST_USER:x:$HOST_USER_ID:82:Linux User,,,:/home/$HOST_USER:" >> /etc
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer && \
     composer global require hirak/prestissimo
 
+# PHP: Install php extensions
+RUN pecl channel-update pecl.php.net && \
+    pecl install xdebug pcov && \
+    php-ext-enable xdebug pcov
+
 USER $HOST_USER
 
 WORKDIR /var/www/html

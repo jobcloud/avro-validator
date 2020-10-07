@@ -18,13 +18,30 @@ final class JsonFormatter implements FormatterInterface
         $this->output = $output;
     }
 
+    /**
+     * @param array<array<mixed>> $result
+     * @return void
+     */
     public function formatSuccess(array $result): void
     {
-        $this->output->writeln(json_encode($result));
+        $this->output->writeln($this->encodeResult($result));
     }
 
+    /**
+     * @param array<array<mixed>> $result
+     * @return void
+     */
     public function formatFail(array $result): void
     {
-        $this->output->writeln(json_encode($result));
+        $this->output->writeln($this->encodeResult($result));
+    }
+
+    /**
+     * @param array<array<mixed>> $result
+     * @return string
+     */
+    private function encodeResult(array $result): string
+    {
+        return json_encode($result, JSON_THROW_ON_ERROR);
     }
 }

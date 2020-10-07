@@ -30,7 +30,7 @@ final class ValidateCommand extends Command
 
     private const SUPPORTED_FORMATS = [self::FORMAT_PRETTY, self::FORMAT_JSON];
 
-    protected function configure()
+    protected function configure(): void
     {
         parent::configure();
 

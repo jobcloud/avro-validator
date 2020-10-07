@@ -23,14 +23,19 @@ final class Validator implements ValidatorInterface
     /**
      * @param string $payload
      * @param string $recordType
-     * @return array
+     * @return array<array<mixed>>
+     * @throws ValidatorException
      */
     public function validate(string $payload, string $recordType): array
     {
         $decodedPayload = json_decode($payload, true);
 
         if (null === $recordSchema = $this->recordRegistry->getRecord($recordType)) {
-            throw new \RuntimeException(sprintf('Could not find record of type "%s"', $recordType));
+            throw new MissingSchemaException(sprintf('Could not find record of type "%s"', $recordType));
+        }
+
+        if (!array_key_exists('fields', $recordSchema) || !is_array($recordSchema['fields'])) {
+            throw new InvalidSchemaException('Schema does not have any fields defined');
         }
 
         $validationErrors = [];
@@ -39,11 +44,11 @@ final class Validator implements ValidatorInterface
     }
 
     /**
-     * @param array $schemaFields
-     * @param array $payload
+     * @param array<array<mixed>> $schemaFields
+     * @param array<mixed> $payload
      * @param string $path
-     * @param array $validationErrors
-     * @return array
+     * @param array<array<mixed>> $validationErrors
+     * @return array<array<mixed>>
      */
     private function validateFields(array $schemaFields, array $payload, string $path, array &$validationErrors): array
     {
@@ -79,6 +84,10 @@ final class Validator implements ValidatorInterface
         return $validationErrors;
     }
 
+    /**
+     * @param array<string> $types
+     * @return string
+     */
     private function formatTypeList(array $types): string
     {
         $lastEntry = array_pop($types);
@@ -91,10 +100,10 @@ final class Validator implements ValidatorInterface
     }
 
     /**
-     * @param array $types
-     * @param $fieldValue
+     * @param array<string> $types
+     * @param mixed $fieldValue
      * @param string $currentPath
-     * @param array $validationErrors
+     * @param array<array<mixed>> $validationErrors
      * @return bool
      */
     private function checkFieldValueBeOneOf(
@@ -127,7 +136,7 @@ final class Validator implements ValidatorInterface
                     $this->validateFields(
                         $recordSchema['fields'],
                         $value,
-                        $currentPath . '['.$key.']',
+                        sprintf('%s[%s]', $currentPath, $key),
                         $validationErrors
                     );
                 }

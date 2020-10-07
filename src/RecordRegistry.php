@@ -7,12 +7,12 @@ namespace Jobcloud\Avro\Validator;
 final class RecordRegistry implements RecordRegistryInterface
 {
     /**
-     * @var array
+     * @var array<string, array<mixed>>
      */
     private $records;
 
     /**
-     * @param array $recordTypes
+     * @param array<array<mixed>> $recordTypes
      */
     private function __construct(array $recordTypes)
     {
@@ -25,7 +25,7 @@ final class RecordRegistry implements RecordRegistryInterface
 
     /**
      * @param string $schema
-     * @return static
+     * @return self
      */
     public static function fromSchema(string $schema): self
     {
@@ -34,7 +34,7 @@ final class RecordRegistry implements RecordRegistryInterface
 
     /**
      * @param string $type
-     * @return array|null
+     * @return array<mixed>|null
      */
     public function getRecord(string $type): ?array
     {

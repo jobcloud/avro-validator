@@ -40,6 +40,10 @@ final class PrettyFormatter implements FormatterInterface
         $this->payloadPath = $payloadPath;
     }
 
+    /**
+     * @param array<array<mixed>> $result
+     * @return void
+     */
     public function formatSuccess(array $result): void
     {
         $this->output->writeln(sprintf(
@@ -48,19 +52,22 @@ final class PrettyFormatter implements FormatterInterface
         ));
     }
 
+    /**
+     * @param array<array<mixed>> $result
+     * @return void
+     */
     public function formatFail(array $result): void
     {
         $this->output->writeln(sprintf(
-            'There were <info>%d</info> errors during validation of payload against schema with namespace <info>%s</info>:',
+            'There were <info>%d</info> errors during validation of payload against ' .
+            'schema with namespace <info>%s</info>:',
             count($result),
             $this->schemaNamespace
         ));
 
         foreach ($result as $error) {
             $this->output->writeln('');
-            $this->output->writeln(sprintf(' - Field: <info>%s</info>',
-                $error['path']
-            ));
+            $this->output->writeln(sprintf(' - Field: <info>%s</info>', $error['path']));
             $this->output->writeln(sprintf('   Message: %s', $error['message']));
             $this->output->writeln(sprintf(
                 '   Value: <comment>%s</comment>',

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="PHP_CodeSniffer" xsi:noNamespaceSchemaLocation="phpcs.xsd">
+    <file>src</file>
+
+    <arg name="basepath" value="."/>
+    <arg name="extensions" value="php"/>
+    <arg name="colors"/>
+    <arg value="p"/>
+    <arg name="report-gitblame"/>
+    <arg name="report-full"/>
+    <arg name="report-junit" value="./build/logs/phpcs/junit.xml"/>
+
+    <rule ref="PSR12"/>
+
+    <config name="ignore_warnings_on_exit" value="1"/>
+</ruleset>

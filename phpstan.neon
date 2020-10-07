@@ -1,0 +1,17 @@
+includes:
+  - vendor/phpstan/phpstan-strict-rules/rules.neon
+  - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+
+parameters:
+  level: 7
+  treatPhpDocTypesAsCertain: false
+  paths:
+    - app
+  ignoreErrors: []
+
+rules:
+  - Ergebnis\PHPStan\Rules\Expressions\NoEmptyRule
+  - Ergebnis\PHPStan\Rules\Files\DeclareStrictTypesRule
+  - Ergebnis\PHPStan\Rules\Expressions\NoErrorSuppressionRule
+  - Ergebnis\PHPStan\Rules\Expressions\NoEvalRule
+  - Ergebnis\PHPStan\Rules\Methods\PrivateInFinalClassRule
