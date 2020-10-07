@@ -8,14 +8,14 @@ final class Validator implements ValidatorInterface
 {
 
     /**
-     * @var RecordRegistry
+     * @var RecordRegistryInterface
      */
     private $recordRegistry;
 
     /**
-     * @param RecordRegistry $recordRegistry
+     * @param RecordRegistryInterface $recordRegistry
      */
-    public function __construct(RecordRegistry $recordRegistry)
+    public function __construct(RecordRegistryInterface $recordRegistry)
     {
         $this->recordRegistry = $recordRegistry;
     }
@@ -51,7 +51,6 @@ final class Validator implements ValidatorInterface
             $fieldName = $rule['name'];
 
             if (false === array_key_exists($fieldName, $payload)) {
-                echo 'something is missing';
                 $validationErrors[] = [
                     'path' => $path,
                     'message' => sprintf('Field "%s" is missing in payload', $fieldName),
