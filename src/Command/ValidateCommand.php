@@ -51,23 +51,20 @@ final class ValidateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /** @var string $schemaFilePath */
         $schemaFilePath = $input->getArgument(self::ARG_SCHEMA);
+        /** @var string $schemaNamespace */
         $schemaNamespace = $input->getArgument(self::ARG_NAMESPACE);
 
         $readStreams = [STDIN];
         $writeStreams = [];
         $exceptStreams = [];
         $hasPayloadFromStdin = 1 === stream_select($readStreams, $writeStreams, $exceptStreams, 0);
-        $hasPayloadFromFile = null !== $input->getArgument(self::ARG_PAYLOAD);
+        $hasPayloadFromFile = $input->hasArgument(self::ARG_PAYLOAD);
 
         if ($hasPayloadFromStdin && $hasPayloadFromFile) {
             $output->writeln('<error>You cannot provide payload through both, stdin and as argument.</error>');
             return 2;
-        }
-
-        if (!$hasPayloadFromStdin && !$hasPayloadFromFile) {
-            $output->writeln('No payload provided. Provide it either over stdin or as argument.');
-            return 3;
         }
 
         $payloadFilePath = null;
@@ -75,12 +72,24 @@ final class ValidateCommand extends Command
         if ($hasPayloadFromStdin) {
             $payloadFilePath = 'php://stdin';
         } elseif ($hasPayloadFromFile) {
+            /** @var string $payloadFilePath */
             $payloadFilePath = $input->getArgument(self::ARG_PAYLOAD);
         }
 
-        $recordRegistry = RecordRegistry::fromSchema(file_get_contents($schemaFilePath));
+        if (null === $payloadFilePath) {
+            $output->writeln('No payload provided. Provide it either over stdin or as argument.');
+            return 3;
+        }
+
+        if (false === $schemaData = file_get_contents($schemaFilePath)) {
+            $output->writeln(sprintf('<error>Could not read schema from file "%s".</error>', $schemaFilePath));
+            return 5;
+        }
+
+        $recordRegistry = RecordRegistry::fromSchema($schemaData);
         $validator = new Validator($recordRegistry);
 
+        /** @var string $outputFormat */
         $outputFormat = $input->getOption(self::OPTION_FORMAT);
 
         if (self::FORMAT_PRETTY === $outputFormat) {
@@ -96,7 +105,12 @@ final class ValidateCommand extends Command
             return 4;
         }
 
-        $result = $validator->validate(file_get_contents($payloadFilePath), $schemaNamespace);
+        if (false === $payloadData = file_get_contents($payloadFilePath)) {
+            $output->writeln('<error>Could not read payload data from source.</error>');
+            return 6;
+        }
+
+        $result = $validator->validate($payloadData, $schemaNamespace);
 
         if (0 === count($result)) {
             $formatter->formatSuccess($result);
