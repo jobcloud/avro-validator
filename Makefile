@@ -4,6 +4,7 @@
 PHPSPEC = ./vendor/bin/phpspec run --format dot -vvv -c phpspec.yml
 PHPSTAN  = ./vendor/bin/phpstan
 PHPCS = ./vendor/bin/phpcs --extensions=php
+INFECTION = ./vendor/bin/infection
 CONSOLE = ./bin/console
 
 clean:
@@ -25,6 +26,11 @@ test: test-unit test-integration
 
 test-unit:
 	${PHPSPEC} --no-coverage
+
+infection-testing:
+	make coverage
+	cp -f build/logs/phpspec/coverage/xml/index.xml build/logs/phpspec/coverage/junit.xml
+	${INFECTION} --test-framework=phpspec --only-covered --coverage=build/logs/phpspec/coverage --min-msi=95 --threads=`nproc`
 
 static-analysis:
 	${PHPSTAN} analyse src --no-progress

@@ -7,8 +7,10 @@ extensions:
     format:
       - text
       - html
+      - xml
       - clover
     output:
-      html: ./build/logs/phpspec/coverage
+      html: ./build/logs/phpspec/coverage/html
+      xml: ./build/logs/phpspec/coverage/xml
       clover: ./build/logs/phpspec/coverage/coverage.xml
     show_only_summary: true
