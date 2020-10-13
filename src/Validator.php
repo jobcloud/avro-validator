@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Jobcloud\Avro\Validator;
 
+use Jobcloud\Avro\Validator\Exception\InvalidSchemaException;
+use Jobcloud\Avro\Validator\Exception\MissingSchemaException;
+use Jobcloud\Avro\Validator\Exception\UnsupportedTypeException;
+use Jobcloud\Avro\Validator\Exception\ValidatorException;
+
 final class Validator implements ValidatorInterface
 {
 
@@ -49,6 +54,7 @@ final class Validator implements ValidatorInterface
      * @param string $path
      * @param array<array<mixed>> $validationErrors
      * @return array<array<mixed>>
+     * @throws UnsupportedTypeException
      */
     private function validateFields(array $schemaFields, array $payload, string $path, array &$validationErrors): array
     {
@@ -68,15 +74,7 @@ final class Validator implements ValidatorInterface
             $currentPath = $path . '.' . $fieldName;
 
             if (false === $this->checkFieldValueBeOneOf($types, $fieldValue, $currentPath, $validationErrors)) {
-                $validationErrors[] = [
-                    'path' => $currentPath,
-                    'message' => sprintf(
-                        'Field value was expected to be of type %s, but was "%s"',
-                        $this->formatTypeList($types),
-                        gettype($fieldValue)
-                    ),
-                    'value' => $fieldValue,
-                ];
+                $validationErrors[] = $this->createValidationError($currentPath, $types, $fieldValue);
                 continue;
             }
         }
@@ -90,13 +88,17 @@ final class Validator implements ValidatorInterface
      */
     private function formatTypeList(array $types): string
     {
-        $lastEntry = array_pop($types);
+        $normalizedTypes = array_map(function ($type) {
+            return isset($type['type']) ? $type['type'] : $type;
+        }, $types);
 
-        if (0 === count($types)) {
+        $lastEntry = array_pop($normalizedTypes);
+
+        if (0 === count($normalizedTypes)) {
             return sprintf('"%s"', $lastEntry);
         }
 
-        return sprintf('"%s" or "%s"', implode('", "', $types), $lastEntry);
+        return sprintf('"%s" or "%s"', implode('", "', $normalizedTypes), $lastEntry);
     }
 
     /**
@@ -105,6 +107,7 @@ final class Validator implements ValidatorInterface
      * @param string $currentPath
      * @param array<array<mixed>> $validationErrors
      * @return bool
+     * @throws UnsupportedTypeException
      */
     private function checkFieldValueBeOneOf(
         array $types,
@@ -112,34 +115,31 @@ final class Validator implements ValidatorInterface
         string $currentPath,
         array &$validationErrors
     ): bool {
+        $scalarTypes = ['null' => 'is_null', 'double' => 'is_double', 'int' => 'is_int', 'string' => 'is_string'];
+
         foreach ($types as $type) {
-            if ('null' === $type && null === $fieldValue) {
-                return true;
+            if (is_string($type) && isset($scalarTypes[$type])) {
+                if ($scalarTypes[$type]($fieldValue)) {
+                    return true;
+                }
+
+                continue;
             }
 
-            if ('double' === $type && is_double($fieldValue)) {
-                return true;
-            }
-
-            if ('int' === $type && is_int($fieldValue)) {
-                return true;
-            }
-
-            if ('string' === $type && is_string($fieldValue)) {
-                return true;
+            if ('enum' === $type) {
+                throw new UnsupportedTypeException('The type "enum" is currently not supported by this validator');
             }
 
             if (is_array($type) && 'array' === $type['type'] && is_array($fieldValue)) {
-                $recordSchema = $this->recordRegistry->getRecord($type['items']);
+                $types = (array) $type['items'];
 
                 foreach ($fieldValue as $key => $value) {
-                    $this->validateFields(
-                        $recordSchema['fields'],
-                        $value,
-                        sprintf('%s[%s]', $currentPath, $key),
-                        $validationErrors
-                    );
+                    $itemPath = sprintf('%s[%s]', $currentPath, $key);
+                    if (false === $this->checkFieldValueBeOneOf($types, $value, $itemPath, $validationErrors)) {
+                        $validationErrors[] = $this->createValidationError($itemPath, $types, $value);
+                    }
                 }
+
                 return true;
             }
 
@@ -150,5 +150,24 @@ final class Validator implements ValidatorInterface
         }
 
         return false;
+    }
+
+    /**
+     * @param string $path
+     * @param array<string> $types
+     * @param mixed $value
+     * @return array<string, mixed>
+     */
+    private function createValidationError(string $path, array $types, $value): array
+    {
+        return [
+            'path' => $path,
+            'message' => sprintf(
+                'Field value was expected to be of type %s, but was "%s"',
+                $this->formatTypeList($types),
+                gettype($value)
+            ),
+            'value' => $value,
+        ];
     }
 }

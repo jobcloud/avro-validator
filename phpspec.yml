@@ -2,9 +2,13 @@ extensions:
   LeanPHP\PhpSpec\CodeCoverage\CodeCoverageExtension:
     whitelist:
       - src
+    blacklist:
+      - src/Command
     format:
+      - text
       - html
       - clover
     output:
       html: ./build/logs/phpspec/coverage
       clover: ./build/logs/phpspec/coverage/coverage.xml
+    show_only_summary: true
