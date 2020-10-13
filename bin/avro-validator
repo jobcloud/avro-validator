@@ -3,7 +3,7 @@
 
 declare(strict_types=1);
 
-namespace Jobcloud\AvroValidator;
+namespace Jobcloud\Avro\Validator\Bin;
 
 use Jobcloud\Avro\Validator\Command\ValidateCommand;
 use Symfony\Component\Console\Application;
