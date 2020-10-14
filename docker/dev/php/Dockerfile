@@ -3,7 +3,6 @@ FROM php:7.3-cli-alpine3.12
 # https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ARG HOST_USER_ID
-ARG HOST_USER
 
 # PHP: Copy configuration files & remove dist files
 RUN mkdir /phpIni
@@ -29,6 +28,6 @@ RUN pecl channel-update pecl.php.net && \
     pecl install pcov && \
     php-ext-enable pcov
 
-USER $HOST_USER
+USER www-data
 
 WORKDIR /var/www/html
