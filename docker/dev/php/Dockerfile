@@ -1,4 +1,4 @@
-FROM php:7.3-cli-alpine3.11
+FROM php:7.3-cli-alpine3.12
 
 # https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
 ENV COMPOSER_ALLOW_SUPERUSER 1
@@ -16,13 +16,9 @@ RUN apk --no-cache upgrade && \
 # we need support for users with ID higher than 65k, so instead of using this:
 #RUN adduser -u $HOST_USER_ID -D -H $HOST_USER
 # we do it manually
-RUN echo "$HOST_USER:x:$HOST_USER_ID:82:Linux User,,,:/home/$HOST_USER:" >> /etc/passwd && \
-    echo "$HOST_USER:!:$(($(date +%s) / 60 / 60 / 24)):0:99999:7:::" >> /etc/shadow && \
-    echo "$HOST_USER:x:$HOST_USER_ID:" >> /etc/group && \
-    mkdir /home/$HOST_USER && \
-    chown $HOST_USER:$HOST_USER /home/$HOST_USER && \
-    echo "ALL ALL=NOPASSWD: ALL" >> /etc/sudoers && \
-    addgroup $HOST_USER www-data
+RUN if [ -n "$HOST_USER_ID" ] && [ "$HOST_USER_ID" -lt 60001 ]; then \
+        usermod -u ${HOST_USER_ID} -o www-data; \
+    fi
 
 # COMPOSER: install binary and prestissimo
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer && \
@@ -30,10 +26,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin -
 
 # PHP: Install php extensions
 RUN pecl channel-update pecl.php.net && \
-    pecl install xdebug pcov && \
-    php-ext-enable xdebug pcov
+    pecl install pcov && \
+    php-ext-enable pcov
 
 USER $HOST_USER
 
 WORKDIR /var/www/html
-
