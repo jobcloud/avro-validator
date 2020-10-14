@@ -11,7 +11,7 @@ COPY dev/php/files/bin/ /usr/local/bin/
 
 # SYS: Install required packages
 RUN apk --no-cache upgrade && \
-    apk --no-cache add bash git sudo openssh autoconf gcc g++ make
+    apk --no-cache add bash git sudo openssh autoconf gcc g++ make shadow
 
 # we need support for users with ID higher than 65k, so instead of using this:
 #RUN adduser -u $HOST_USER_ID -D -H $HOST_USER
