@@ -86,7 +86,7 @@ final class ValidatorSpec extends ObjectBehavior
         )->shouldBe([
             [
                 'path' => '$.stringTest',
-                'message' => 'Field value was expected to be of type "string", but was "integer"',
+                'message' => 'Field value was expected to be of type "string", but was "int"',
                 'value' => $invalidStringValue,
             ],
             [
@@ -96,17 +96,17 @@ final class ValidatorSpec extends ObjectBehavior
             ],
             [
                 'path' => '$.doubleTest',
-                'message' => 'Field value was expected to be of type "double", but was "integer"',
+                'message' => 'Field value was expected to be of type "double", but was "int"',
                 'value' => $invalidDoubleValue,
             ],
             [
                 'path' => '$.arrayTest',
-                'message' => 'Field value was expected to be of type "array", but was "integer"',
+                'message' => 'Field value was expected to be of type "array", but was "int"',
                 'value' => $invalidArrayValue,
             ],
             [
                 'path' => '$.multipleTypeTest',
-                'message' => 'Field value was expected to be of type "null" or "array", but was "integer"',
+                'message' => 'Field value was expected to be of type "null" or "array", but was "int"',
                 'value' => $invalidNullOrArrayValue,
             ],
         ]);
@@ -142,7 +142,7 @@ final class ValidatorSpec extends ObjectBehavior
         )->shouldBe([
             [
                 'path' => '$.arrayTest[0]',
-                'message' => 'Field value was expected to be of type "string", but was "integer"',
+                'message' => 'Field value was expected to be of type "string", but was "int"',
                 'value' => $invalidArrayItemValue,
             ],
         ]);
@@ -213,7 +213,7 @@ final class ValidatorSpec extends ObjectBehavior
         )->shouldBe([
             [
                 'path' => '$.subSchema.id',
-                'message' => 'Field value was expected to be of type "string", but was "integer"',
+                'message' => 'Field value was expected to be of type "string", but was "int"',
                 'value' => $invalidArrayItemValue,
             ],
         ]);

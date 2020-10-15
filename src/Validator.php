@@ -11,6 +11,25 @@ use Jobcloud\Avro\Validator\Exception\ValidatorException;
 
 final class Validator implements ValidatorInterface
 {
+    /**
+     * @var int lower bound of integer values: -(1 << 31)
+     */
+    private const INT_MIN_VALUE = -2147483648;
+
+    /**
+     * @var int upper bound of integer values: (1 << 31) - 1
+     */
+    private const INT_MAX_VALUE = 2147483647;
+
+    /**
+     * @var int lower bound of long values: -(1 << 63)
+     */
+    private const LONG_MIN_VALUE = -9223372036854775808;
+
+    /**
+     * @var int upper bound of long values: (1 << 63) - 1
+     */
+    private const LONG_MAX_VALUE = 9223372036854775807;
 
     /**
      * @var RecordRegistryInterface
@@ -115,7 +134,19 @@ final class Validator implements ValidatorInterface
         string $currentPath,
         array &$validationErrors
     ): bool {
-        $scalarTypes = ['null' => 'is_null', 'double' => 'is_double', 'int' => 'is_int', 'string' => 'is_string'];
+        $scalarTypes = [
+            'null' => 'is_null',
+            'long' => static function ($value) {
+                return is_int($value) && self::LONG_MIN_VALUE <= $value && $value <= self::LONG_MAX_VALUE;
+            },
+            'int' => static function ($value): bool {
+                return is_int($value) && self::INT_MIN_VALUE <= $value && $value <= self::INT_MAX_VALUE;
+            },
+            'string' => 'is_string',
+            'boolean' => 'is_bool',
+            'float' => 'is_float',
+            'double' => 'is_double',
+        ];
 
         foreach ($types as $type) {
             if (is_string($type) && isset($scalarTypes[$type])) {
@@ -126,8 +157,11 @@ final class Validator implements ValidatorInterface
                 continue;
             }
 
-            if ('enum' === $type) {
-                throw new UnsupportedTypeException('The type "enum" is currently not supported by this validator');
+            if (in_array($type, ['enum', 'map', 'bytes'])) {
+                throw new UnsupportedTypeException(sprintf(
+                    'The type "%d" is currently not supported by this validator',
+                    $type
+                ));
             }
 
             if (is_array($type) && 'array' === $type['type'] && is_array($fieldValue)) {
@@ -165,9 +199,20 @@ final class Validator implements ValidatorInterface
             'message' => sprintf(
                 'Field value was expected to be of type %s, but was "%s"',
                 $this->formatTypeList($types),
-                gettype($value)
+                $this->getType($value)
             ),
             'value' => $value,
         ];
+    }
+
+    private function getType($value): string
+    {
+        $type = gettype($value);
+
+        if ('integer' === $type) {
+            return ($value > self::INT_MAX_VALUE || $value < self::INT_MIN_VALUE) ? 'long' : 'int';
+        }
+
+        return $type;
     }
 }
