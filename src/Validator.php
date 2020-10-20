@@ -32,14 +32,14 @@ final class Validator implements ValidatorInterface
     private const LONG_MAX_VALUE = 9223372036854775807;
 
     /**
-     * @var RecordRegistryInterface
+     * @var SchemaRegistryInterface
      */
     private $recordRegistry;
 
     /**
-     * @param RecordRegistryInterface $recordRegistry
+     * @param SchemaRegistryInterface $recordRegistry
      */
-    public function __construct(RecordRegistryInterface $recordRegistry)
+    public function __construct(SchemaRegistryInterface $recordRegistry)
     {
         $this->recordRegistry = $recordRegistry;
     }
@@ -54,7 +54,7 @@ final class Validator implements ValidatorInterface
     {
         $decodedPayload = json_decode($payload, true);
 
-        if (null === $recordSchema = $this->recordRegistry->getRecord($recordType)) {
+        if (null === $recordSchema = $this->recordRegistry->getSchema($recordType)) {
             throw new MissingSchemaException(sprintf('Could not find record of type "%s"', $recordType));
         }
 
@@ -136,11 +136,11 @@ final class Validator implements ValidatorInterface
     ): bool {
         $scalarTypes = [
             'null' => 'is_null',
-            'long' => static function ($value): bool {
-                return is_int($value) && self::LONG_MIN_VALUE <= $value && $value <= self::LONG_MAX_VALUE;
-            },
             'int' => static function ($value): bool {
                 return is_int($value) && self::INT_MIN_VALUE <= $value && $value <= self::INT_MAX_VALUE;
+            },
+            'long' => static function ($value): bool {
+                return is_int($value) && self::LONG_MIN_VALUE <= $value && $value <= self::LONG_MAX_VALUE;
             },
             'string' => 'is_string',
             'boolean' => 'is_bool',
@@ -164,20 +164,30 @@ final class Validator implements ValidatorInterface
                 ));
             }
 
-            if (is_array($type) && 'array' === $type['type'] && is_array($fieldValue)) {
-                $types = (array) $type['items'];
+            if (is_array($type)) {
+                if ('array' === $type['type'] && is_array($fieldValue)) {
+                    $types = (array) $type['items'];
 
-                foreach ($fieldValue as $key => $value) {
-                    $itemPath = sprintf('%s[%s]', $currentPath, $key);
-                    if (false === $this->checkFieldValueBeOneOf($types, $value, $itemPath, $validationErrors)) {
-                        $validationErrors[] = $this->createValidationError($itemPath, $types, $value);
+                    foreach ($fieldValue as $key => $value) {
+                        $itemPath = sprintf('%s[%s]', $currentPath, $key);
+                        if (false === $this->checkFieldValueBeOneOf($types, $value, $itemPath, $validationErrors)) {
+                            $validationErrors[] = $this->createValidationError($itemPath, $types, $value);
+                        }
                     }
-                }
 
-                return true;
+                    return true;
+                } elseif ('record' === $type['type'] && isset($type['fields'])) {
+                    // Inlined schema
+                    if (null === $subRecord = $this->recordRegistry->getSchema($type['name'])) {
+                        $subRecord = $type;
+                        $this->recordRegistry->addSchema($type);
+                    }
+                    $this->validateFields($subRecord['fields'], $fieldValue, $currentPath, $validationErrors);
+                    return true;
+                }
             }
 
-            if (is_string($type) && null !== $recordSchema = $this->recordRegistry->getRecord($type)) {
+            if (is_string($type) && null !== $recordSchema = $this->recordRegistry->getSchema($type)) {
                 $this->validateFields($recordSchema['fields'], $fieldValue, $currentPath, $validationErrors);
                 return true;
             }
@@ -201,7 +211,7 @@ final class Validator implements ValidatorInterface
                 $this->formatTypeList($types),
                 $this->getType($value)
             ),
-            'value' => $value,
+            'value' => is_scalar($value) ? $value : var_export($value, true),
         ];
     }
 
