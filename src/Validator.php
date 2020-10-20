@@ -6,6 +6,7 @@ namespace Jobcloud\Avro\Validator;
 
 use Jobcloud\Avro\Validator\Exception\InvalidSchemaException;
 use Jobcloud\Avro\Validator\Exception\MissingSchemaException;
+use Jobcloud\Avro\Validator\Exception\RecordRegistryException;
 use Jobcloud\Avro\Validator\Exception\UnsupportedTypeException;
 use Jobcloud\Avro\Validator\Exception\ValidatorException;
 
@@ -59,6 +60,7 @@ final class Validator implements ValidatorInterface
      * @param string $recordType
      * @return array<array<mixed>>
      * @throws ValidatorException
+     * @throws RecordRegistryException
      */
     public function validate(string $payload, string $recordType): array
     {
@@ -84,6 +86,7 @@ final class Validator implements ValidatorInterface
      * @param array<array<mixed>> $validationErrors
      * @return array<array<mixed>>
      * @throws UnsupportedTypeException
+     * @throws RecordRegistryException
      */
     private function validateFields(array $schemaFields, array $payload, string $path, array &$validationErrors): array
     {
@@ -155,6 +158,7 @@ final class Validator implements ValidatorInterface
      * @param array<array<mixed>> $validationErrors
      * @return bool
      * @throws UnsupportedTypeException
+     * @throws RecordRegistryException
      */
     private function checkFieldValueBeOneOf(
         array $types,

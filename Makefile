@@ -20,7 +20,7 @@ code-style:
 coverage:
 	mkdir -p build/logs/phpspec/coverage
 	php -dpcov.enabled=1 -dpcov.directory=./src ${PHPSPEC}
-	./vendor/bin/coverage-check build/logs/phpspec/coverage/coverage.xml 100
+	./vendor/bin/coverage-check build/logs/phpspec/coverage/coverage.xml 98
 
 test: test-unit test-integration
 
@@ -30,7 +30,7 @@ test-unit:
 infection-testing:
 	make coverage
 	cp -f build/logs/phpspec/coverage/xml/index.xml build/logs/phpspec/coverage/junit.xml
-	${INFECTION} --test-framework=phpspec --only-covered --coverage=build/logs/phpspec/coverage --min-msi=95 --threads=`nproc`
+	${INFECTION} --test-framework=phpspec --only-covered --coverage=build/logs/phpspec/coverage --min-msi=88 --threads=`nproc`
 
 static-analysis:
 	${PHPSTAN} analyse src --no-progress
