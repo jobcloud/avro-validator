@@ -11,6 +11,10 @@ use Jobcloud\Avro\Validator\Exception\ValidatorException;
 
 final class Validator implements ValidatorInterface
 {
+    public const ERROR_TYPE_MISSING_FIELD = 'missingField';
+
+    public const ERROR_TYPE_WRONG_TYPE = 'wrongType';
+
     /**
      * @var int lower bound of integer values: -(1 << 31)
      */
@@ -83,6 +87,7 @@ final class Validator implements ValidatorInterface
             if (false === array_key_exists($fieldName, $payload)) {
                 $validationErrors[] = [
                     'path' => $path,
+                    'type' => self::ERROR_TYPE_MISSING_FIELD,
                     'message' => sprintf('Field "%s" is missing in payload', $fieldName),
                 ];
                 continue;
@@ -93,7 +98,12 @@ final class Validator implements ValidatorInterface
             $currentPath = $path . '.' . $fieldName;
 
             if (false === $this->checkFieldValueBeOneOf($types, $fieldValue, $currentPath, $validationErrors)) {
-                $validationErrors[] = $this->createValidationError($currentPath, $types, $fieldValue);
+                $validationErrors[] = $this->createValidationError(
+                    $currentPath,
+                    self::ERROR_TYPE_WRONG_TYPE,
+                    $types,
+                    $fieldValue
+                );
                 continue;
             }
         }
@@ -171,7 +181,12 @@ final class Validator implements ValidatorInterface
                     foreach ($fieldValue as $key => $value) {
                         $itemPath = sprintf('%s[%s]', $currentPath, $key);
                         if (false === $this->checkFieldValueBeOneOf($types, $value, $itemPath, $validationErrors)) {
-                            $validationErrors[] = $this->createValidationError($itemPath, $types, $value);
+                            $validationErrors[] = $this->createValidationError(
+                                $itemPath,
+                                self::ERROR_TYPE_WRONG_TYPE,
+                                $types,
+                                $value
+                            );
                         }
                     }
 
@@ -182,13 +197,29 @@ final class Validator implements ValidatorInterface
                         $subRecord = $type;
                         $this->recordRegistry->addSchema($type);
                     }
-                    $this->validateFields($subRecord['fields'], $fieldValue, $currentPath, $validationErrors);
+                    $validationErrorsSub = [];
+                    $this->validateFields($subRecord['fields'], $fieldValue, $currentPath, $validationErrorsSub);
+
+                    if ($this->hasOnlyMissingFields($validationErrorsSub)) {
+                        continue;
+                    }
+
+                    $validationErrors = array_merge($validationErrors, $validationErrorsSub);
+
                     return true;
                 }
             }
 
             if (is_string($type) && null !== $recordSchema = $this->recordRegistry->getSchema($type)) {
-                $this->validateFields($recordSchema['fields'], $fieldValue, $currentPath, $validationErrors);
+                $validationErrorsSub = [];
+                $this->validateFields($recordSchema['fields'], $fieldValue, $currentPath, $validationErrorsSub);
+
+                if ($this->hasOnlyMissingFields($validationErrorsSub)) {
+                    continue;
+                }
+
+                $validationErrors = array_merge($validationErrors, $validationErrorsSub);
+
                 return true;
             }
         }
@@ -196,16 +227,29 @@ final class Validator implements ValidatorInterface
         return false;
     }
 
+    private function hasOnlyMissingFields(array $validationErrors): bool
+    {
+        foreach ($validationErrors as $validationError) {
+            if (self::ERROR_TYPE_MISSING_FIELD !== $validationError['type']) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /**
      * @param string $path
+     * @param string $errorType
      * @param array<string> $types
      * @param mixed $value
      * @return array<string, mixed>
      */
-    private function createValidationError(string $path, array $types, $value): array
+    private function createValidationError(string $path, string $errorType, array $types, $value): array
     {
         return [
             'path' => $path,
+            'type' => $errorType,
             'message' => sprintf(
                 'Field value was expected to be of type %s, but was "%s"',
                 $this->formatTypeList($types),

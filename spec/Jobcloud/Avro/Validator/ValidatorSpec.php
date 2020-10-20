@@ -59,10 +59,12 @@ final class ValidatorSpec extends ObjectBehavior
         )->shouldBe([
             [
                 'path' => '$',
+                'type' => 'missingField',
                 'message' => 'Field "id" is missing in payload',
             ],
             [
                 'path' => '$',
+                'type' => 'missingField',
                 'message' => 'Field "age" is missing in payload',
             ],
         ]);
@@ -96,31 +98,37 @@ final class ValidatorSpec extends ObjectBehavior
         )->shouldBe([
             [
                 'path' => '$.stringTest',
+                'type' => 'wrongType',
                 'message' => 'Field value was expected to be of type "string", but was "int"',
                 'value' => $invalidStringValue,
             ],
             [
                 'path' => '$.intTest',
+                'type' => 'wrongType',
                 'message' => 'Field value was expected to be of type "int", but was "string"',
                 'value' => $invalidIntValue,
             ],
             [
                 'path' => '$.longTest',
+                'type' => 'wrongType',
                 'message' => 'Field value was expected to be of type "long", but was "string"',
                 'value' => $invalidLongValue,
             ],
             [
                 'path' => '$.doubleTest',
+                'type' => 'wrongType',
                 'message' => 'Field value was expected to be of type "double", but was "int"',
                 'value' => $invalidDoubleValue,
             ],
             [
                 'path' => '$.arrayTest',
+                'type' => 'wrongType',
                 'message' => 'Field value was expected to be of type "array", but was "int"',
                 'value' => $invalidArrayValue,
             ],
             [
                 'path' => '$.multipleTypeTest',
+                'type' => 'wrongType',
                 'message' => 'Field value was expected to be of type "null" or "array", but was "int"',
                 'value' => $invalidNullOrArrayValue,
             ],
@@ -157,6 +165,7 @@ final class ValidatorSpec extends ObjectBehavior
         )->shouldBe([
             [
                 'path' => '$.arrayTest[0]',
+                'type' => 'wrongType',
                 'message' => 'Field value was expected to be of type "string", but was "int"',
                 'value' => $invalidArrayItemValue,
             ],
@@ -188,7 +197,7 @@ final class ValidatorSpec extends ObjectBehavior
         ]);
     }
 
-    public function it_validates_sub_schemas(SchemaRegistryInterface $recordRegistry): void
+    public function it_validates_union_sub_schemas(SchemaRegistryInterface $recordRegistry): void
     {
         $schemaName = 'foo.bar.baz';
         $recordRegistry->getSchema($schemaName)->willReturn([
@@ -239,6 +248,7 @@ final class ValidatorSpec extends ObjectBehavior
         )->shouldBe([
             [
                 'path' => '$.subSchema.id',
+                'type' => 'wrongType',
                 'message' => 'Field value was expected to be of type "string", but was "int"',
                 'value' => $invalidArrayItemValue,
             ],
@@ -327,21 +337,25 @@ final class ValidatorSpec extends ObjectBehavior
         )->shouldBe([
             [
                 'path' => '$.minLongButIsInt',
+                'type' => 'wrongType',
                 'message' => 'Field value was expected to be of type "int", but was "long"',
                 'value' => $invalidMinLongButIsIntValue,
             ],
             [
                 'path' => '$.maxLongButIsInt',
+                'type' => 'wrongType',
                 'message' => 'Field value was expected to be of type "int", but was "long"',
                 'value' => $invalidMaxLongButIsIntValue,
             ],
             [
                 'path' => '$.minIntPlusOneButIsInt',
+                'type' => 'wrongType',
                 'message' => 'Field value was expected to be of type "int", but was "long"',
                 'value' => $invalidMinIntPlusOneButIsInt,
             ],
             [
                 'path' => '$.maxIntPlusOneButIsInt',
+                'type' => 'wrongType',
                 'message' => 'Field value was expected to be of type "int", but was "long"',
                 'value' => $invalidMaxIntPlusOneButIsInt,
             ],
