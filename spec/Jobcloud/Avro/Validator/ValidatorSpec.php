@@ -99,7 +99,7 @@ final class ValidatorSpec extends ObjectBehavior
             [
                 'path' => '$.longTest',
                 'message' => 'Field value was expected to be of type "long", but was "string"',
-                'value' => $invalidIntValue,
+                'value' => $invalidLongValue,
             ],
             [
                 'path' => '$.doubleTest',
