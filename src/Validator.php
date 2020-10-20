@@ -102,13 +102,13 @@ final class Validator implements ValidatorInterface
     }
 
     /**
-     * @param array<string> $types
+     * @param array<string|array<string, mixed>> $types
      * @return string
      */
     private function formatTypeList(array $types): string
     {
-        $normalizedTypes = array_map(function ($type) {
-            return isset($type['type']) ? $type['type'] : $type;
+        $normalizedTypes = array_map(function ($type): string {
+            return is_array($type) ? $type['type'] : $type;
         }, $types);
 
         $lastEntry = array_pop($normalizedTypes);
@@ -136,7 +136,7 @@ final class Validator implements ValidatorInterface
     ): bool {
         $scalarTypes = [
             'null' => 'is_null',
-            'long' => static function ($value) {
+            'long' => static function ($value): bool {
                 return is_int($value) && self::LONG_MIN_VALUE <= $value && $value <= self::LONG_MAX_VALUE;
             },
             'int' => static function ($value): bool {
@@ -157,7 +157,7 @@ final class Validator implements ValidatorInterface
                 continue;
             }
 
-            if (in_array($type, ['enum', 'map', 'bytes'])) {
+            if (in_array($type, ['enum', 'map', 'bytes'], true)) {
                 throw new UnsupportedTypeException(sprintf(
                     'The type "%d" is currently not supported by this validator',
                     $type
@@ -205,6 +205,10 @@ final class Validator implements ValidatorInterface
         ];
     }
 
+    /**
+     * @param mixed $value
+     * @return string
+     */
     private function getType($value): string
     {
         $type = gettype($value);

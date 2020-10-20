@@ -68,6 +68,7 @@ final class ValidatorSpec extends ObjectBehavior
 
         $invalidStringValue = 42;
         $invalidIntValue = 'foo';
+        $invalidLongValue = 'long';
         $invalidDoubleValue = 42;
         $invalidArrayValue = 42;
         $invalidNullOrArrayValue = 42;
@@ -75,6 +76,7 @@ final class ValidatorSpec extends ObjectBehavior
         $payload = [
             'stringTest' => $invalidStringValue,
             'intTest' => $invalidIntValue,
+            'longTest' => $invalidLongValue,
             'doubleTest' => $invalidDoubleValue,
             'arrayTest' => $invalidArrayValue,
             'multipleTypeTest' => $invalidNullOrArrayValue,
@@ -92,6 +94,11 @@ final class ValidatorSpec extends ObjectBehavior
             [
                 'path' => '$.intTest',
                 'message' => 'Field value was expected to be of type "int", but was "string"',
+                'value' => $invalidIntValue,
+            ],
+            [
+                'path' => '$.longTest',
+                'message' => 'Field value was expected to be of type "long", but was "string"',
                 'value' => $invalidIntValue,
             ],
             [
@@ -227,6 +234,7 @@ final class ValidatorSpec extends ObjectBehavior
         $payload = [
             'stringTest' => 'foo',
             'intTest' => 42,
+            'longTest' => 1234567890,
             'doubleTest' => 42.0,
             'arrayTest' => ['foo', 'bar'],
             'multipleTypeTest' => null,
@@ -252,6 +260,10 @@ final class ValidatorSpec extends ObjectBehavior
                 [
                     'name' => 'intTest',
                     'type' => 'int',
+                ],
+                [
+                    'name' => 'longTest',
+                    'type' => 'long',
                 ],
                 [
                     'name' => 'doubleTest',
