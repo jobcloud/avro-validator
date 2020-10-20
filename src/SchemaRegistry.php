@@ -47,6 +47,10 @@ final class SchemaRegistry implements SchemaRegistryInterface
         return null;
     }
 
+    /**
+     * @param array $record
+     * @throws SchemaRegistryException
+     */
     public function addSchema(array $record): void
     {
         $this->records[$this->determineRecordIdentifier($record)] = $record;

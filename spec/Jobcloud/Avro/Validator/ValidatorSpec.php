@@ -123,7 +123,7 @@ final class ValidatorSpec extends ObjectBehavior
             [
                 'path' => '$.arrayTest',
                 'type' => 'wrongType',
-                'message' => 'Field value was expected to be of type "array", but was "int"',
+                'message' => 'Field value was expected to be of type "array<string>", but was "int"',
                 'value' => $invalidArrayValue,
             ],
             [
@@ -360,6 +360,72 @@ final class ValidatorSpec extends ObjectBehavior
                 'value' => $invalidMaxIntPlusOneButIsInt,
             ],
         ]);
+    }
+
+    public function it_handles_inlined_schemas(SchemaRegistryInterface $recordRegistry): void
+    {
+        $schemaName = 'foo.bar.baz';
+        $inlinedSchemaName = 'account';
+        $inlinedSchemaName2 = 'foo';
+
+        $inlinedSchema = [
+            'type' => 'record',
+            'name' => $inlinedSchemaName,
+            'fields' => [
+                [
+                    'name' => 'accountId',
+                    'type' => 'string',
+                ],
+            ],
+        ];
+
+        $inlinedSchema2 = [
+            'type' => 'record',
+            'name' => $inlinedSchemaName2,
+            'fields' => [
+                [
+                    'name' => 'missingField',
+                    'type' => 'string',
+                ],
+            ],
+        ];
+
+        $recordRegistry->getSchema($schemaName)->willReturn([
+            'type' => 'record',
+            'name' => 'baz',
+            'namespace' => 'foo.bar',
+            'fields' => [
+                [
+                    'name' => 'account1',
+                    'type' => $inlinedSchema,
+                ],
+                [
+                    'name' => 'account2',
+                    'type' => [
+                        $inlinedSchema2,
+                        $inlinedSchemaName,
+                    ],
+                ],
+            ],
+        ]);
+        $recordRegistry->getSchema($inlinedSchemaName)->shouldBeCalled()->willReturn(null, $inlinedSchema);
+        $recordRegistry->addSchema($inlinedSchema)->shouldBeCalled();
+        $recordRegistry->getSchema($inlinedSchemaName2)->shouldBeCalled()->willReturn(null);
+        $recordRegistry->addSchema($inlinedSchema2)->shouldBeCalled();
+
+        $payload = [
+            'account1' => [
+                'accountId' => 'foobar',
+            ],
+            'account2' => [
+                'accountId' => 'baz',
+            ],
+        ];
+
+        $this->validate(
+            $this->encodePayload($payload),
+            $schemaName
+        )->shouldBe([]);
     }
 
     private function getSampleSchema(): array

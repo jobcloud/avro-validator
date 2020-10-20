@@ -11,8 +11,14 @@ use Jobcloud\Avro\Validator\Exception\ValidatorException;
 
 final class Validator implements ValidatorInterface
 {
+    /**
+     * @var string
+     */
     public const ERROR_TYPE_MISSING_FIELD = 'missingField';
 
+    /**
+     * @var string
+     */
     public const ERROR_TYPE_WRONG_TYPE = 'wrongType';
 
     /**
@@ -118,7 +124,19 @@ final class Validator implements ValidatorInterface
     private function formatTypeList(array $types): string
     {
         $normalizedTypes = array_map(function ($type): string {
-            return is_array($type) ? $type['type'] : $type;
+            if (!is_array($type)) {
+                return $type;
+            }
+
+            if ('array' === $type['type']) {
+                return sprintf('%s<%s>', $type['type'], $type['items']);
+            }
+
+            if ('record' === $type['type']) {
+                return $type['name'];
+            }
+
+            throw new \InvalidArgumentException('Could not determine name of type');
         }, $types);
 
         $lastEntry = array_pop($normalizedTypes);
@@ -197,6 +215,7 @@ final class Validator implements ValidatorInterface
                         $subRecord = $type;
                         $this->recordRegistry->addSchema($type);
                     }
+
                     $validationErrorsSub = [];
                     $this->validateFields($subRecord['fields'], $fieldValue, $currentPath, $validationErrorsSub);
 
@@ -229,6 +248,10 @@ final class Validator implements ValidatorInterface
 
     private function hasOnlyMissingFields(array $validationErrors): bool
     {
+        if (0 === count($validationErrors)) {
+            return false;
+        }
+
         foreach ($validationErrors as $validationError) {
             if (self::ERROR_TYPE_MISSING_FIELD !== $validationError['type']) {
                 return false;
