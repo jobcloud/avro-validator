@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace Jobcloud\Avro\Validator\Exception;
 
-final class SchemaRegistryException extends \Exception
+final class RecordRegistryException extends \Exception
 {
 }

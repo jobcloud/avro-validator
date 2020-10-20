@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Jobcloud\Avro\Validator;
 
-use Jobcloud\Avro\Validator\Exception\SchemaRegistryException;
+use Jobcloud\Avro\Validator\Exception\RecordRegistryException;
 
-final class SchemaRegistry implements SchemaRegistryInterface
+final class RecordRegistry implements RecordRegistryInterface
 {
     /**
      * @var array<string, array<mixed>>
@@ -21,7 +21,7 @@ final class SchemaRegistry implements SchemaRegistryInterface
         $this->records = [];
 
         foreach ($recordTypes as $recordType) {
-            $this->addSchema($recordType);
+            $this->addRecord($recordType);
         }
     }
 
@@ -38,7 +38,7 @@ final class SchemaRegistry implements SchemaRegistryInterface
      * @param string $identifier
      * @return array<mixed>|null
      */
-    public function getSchema(string $identifier): ?array
+    public function getRecord(string $identifier): ?array
     {
         if (isset($this->records[$identifier])) {
             return $this->records[$identifier];
@@ -48,14 +48,19 @@ final class SchemaRegistry implements SchemaRegistryInterface
     }
 
     /**
-     * @param array $record
-     * @throws SchemaRegistryException
+     * @param array<string, mixed> $record
+     * @throws RecordRegistryException
      */
-    public function addSchema(array $record): void
+    public function addRecord(array $record): void
     {
         $this->records[$this->determineRecordIdentifier($record)] = $record;
     }
 
+    /**
+     * @param array<string, mixed> $record
+     * @return string
+     * @throws RecordRegistryException
+     */
     private function determineRecordIdentifier(array $record): string
     {
         $identifier = '';
@@ -65,7 +70,7 @@ final class SchemaRegistry implements SchemaRegistryInterface
         }
 
         if (!isset($record['name'])) {
-            throw new SchemaRegistryException('Provided schema does not have a name');
+            throw new RecordRegistryException('Provided schema does not have a name');
         }
 
         $identifier .= $record['name'];

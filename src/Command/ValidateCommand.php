@@ -6,7 +6,7 @@ namespace Jobcloud\Avro\Validator\Command;
 
 use Jobcloud\Avro\Validator\Command\Formatter\JsonFormatter;
 use Jobcloud\Avro\Validator\Command\Formatter\PrettyFormatter;
-use Jobcloud\Avro\Validator\SchemaRegistry;
+use Jobcloud\Avro\Validator\RecordRegistry;
 use Jobcloud\Avro\Validator\Validator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -86,7 +86,7 @@ final class ValidateCommand extends Command
             return 5;
         }
 
-        $recordRegistry = SchemaRegistry::fromSchema($schemaData);
+        $recordRegistry = RecordRegistry::fromSchema($schemaData);
         $validator = new Validator($recordRegistry);
 
         /** @var string $outputFormat */

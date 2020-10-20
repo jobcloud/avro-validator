@@ -71,8 +71,25 @@ final class PrettyFormatter implements FormatterInterface
             $this->output->writeln(sprintf('   Message: %s', $error['message']));
             $this->output->writeln(sprintf(
                 '   Value: <comment>%s</comment>',
-                is_string($error['value']) ? sprintf('"%s"', $error['value']) : $error['value']
+                $this->formatValue($error['value'])
             ));
         }
+    }
+
+    /**
+     * @param mixed $value
+     * @return string
+     */
+    private function formatValue($value): string
+    {
+        if (is_string($value)) {
+            return sprintf('"%s"', $value);
+        }
+
+        if (is_scalar($value)) {
+            return (string) $value;
+        }
+
+        return json_encode($value, JSON_THROW_ON_ERROR);
     }
 }

@@ -5,37 +5,37 @@ namespace spec\Jobcloud\Avro\Validator;
 use Jobcloud\Avro\Validator\Exception\InvalidSchemaException;
 use Jobcloud\Avro\Validator\Exception\MissingSchemaException;
 use Jobcloud\Avro\Validator\Exception\UnsupportedTypeException;
-use Jobcloud\Avro\Validator\SchemaRegistryInterface;
+use Jobcloud\Avro\Validator\RecordRegistryInterface;
 use Jobcloud\Avro\Validator\Validator;
 use PhpSpec\ObjectBehavior;
 
 final class ValidatorSpec extends ObjectBehavior
 {
-    public function let(SchemaRegistryInterface $recordRegistry): void
+    public function let(RecordRegistryInterface $recordRegistry): void
     {
         $this->beConstructedWith($recordRegistry);
     }
 
-    public function it_throws_exception_on_missing_schema(SchemaRegistryInterface $recordRegistry): void
+    public function it_throws_exception_on_missing_schema(RecordRegistryInterface $recordRegistry): void
     {
         $schemaName = 'foo.bar.baz';
-        $recordRegistry->getSchema($schemaName)->willReturn(null);
+        $recordRegistry->getRecord($schemaName)->willReturn(null);
 
         $this->shouldThrow(MissingSchemaException::class)->during('validate', ['{}', $schemaName]);
     }
 
-    public function it_throws_exception_on_invalid_schema(SchemaRegistryInterface $recordRegistry): void
+    public function it_throws_exception_on_invalid_schema(RecordRegistryInterface $recordRegistry): void
     {
         $schemaName = 'foo.bar.baz';
-        $recordRegistry->getSchema($schemaName)->willReturn([]);
+        $recordRegistry->getRecord($schemaName)->willReturn([]);
 
         $this->shouldThrow(InvalidSchemaException::class)->during('validate', ['{}', $schemaName]);
     }
 
-    public function it_detects_missing_fields(SchemaRegistryInterface $recordRegistry): void
+    public function it_detects_missing_fields(RecordRegistryInterface $recordRegistry): void
     {
         $schemaName = 'foo.bar.baz';
-        $recordRegistry->getSchema($schemaName)->willReturn([
+        $recordRegistry->getRecord($schemaName)->willReturn([
             'type' => 'record',
             'name' => 'baz',
             'namespace' => 'foo.bar',
@@ -70,11 +70,11 @@ final class ValidatorSpec extends ObjectBehavior
         ]);
     }
 
-    public function it_detects_wrong_field_values(SchemaRegistryInterface $recordRegistry): void
+    public function it_detects_wrong_field_values(RecordRegistryInterface $recordRegistry): void
     {
         $schemaName = 'foo.bar.baz';
-        $recordRegistry->getSchema($schemaName)->willReturn($this->getSampleSchema());
-        $recordRegistry->getSchema('array')->willReturn(null);
+        $recordRegistry->getRecord($schemaName)->willReturn($this->getSampleSchema());
+        $recordRegistry->getRecord('array')->willReturn(null);
 
         $invalidStringValue = 42;
         $invalidIntValue = 'foo';
@@ -135,10 +135,10 @@ final class ValidatorSpec extends ObjectBehavior
         ]);
     }
 
-    public function it_validates_array_items(SchemaRegistryInterface $recordRegistry): void
+    public function it_validates_array_items(RecordRegistryInterface $recordRegistry): void
     {
         $schemaName = 'foo.bar.baz';
-        $recordRegistry->getSchema($schemaName)->willReturn([
+        $recordRegistry->getRecord($schemaName)->willReturn([
             'type' => 'record',
             'name' => 'baz',
             'namespace' => 'foo.bar',
@@ -172,10 +172,10 @@ final class ValidatorSpec extends ObjectBehavior
         ]);
     }
 
-    public function it_throws_exception_for_unsupported_type_enum(SchemaRegistryInterface $recordRegistry): void
+    public function it_throws_exception_for_unsupported_type_enum(RecordRegistryInterface $recordRegistry): void
     {
         $schemaName = 'foo.bar.baz';
-        $recordRegistry->getSchema($schemaName)->willReturn([
+        $recordRegistry->getRecord($schemaName)->willReturn([
             'type' => 'record',
             'name' => 'baz',
             'namespace' => 'foo.bar',
@@ -197,10 +197,10 @@ final class ValidatorSpec extends ObjectBehavior
         ]);
     }
 
-    public function it_validates_union_sub_schemas(SchemaRegistryInterface $recordRegistry): void
+    public function it_validates_union_sub_schemas(RecordRegistryInterface $recordRegistry): void
     {
         $schemaName = 'foo.bar.baz';
-        $recordRegistry->getSchema($schemaName)->willReturn([
+        $recordRegistry->getRecord($schemaName)->willReturn([
             'type' => 'record',
             'name' => 'baz',
             'namespace' => 'foo.bar',
@@ -211,7 +211,7 @@ final class ValidatorSpec extends ObjectBehavior
                 ],
             ],
         ]);
-        $recordRegistry->getSchema('wrong.sub.schema')->willReturn([
+        $recordRegistry->getRecord('wrong.sub.schema')->willReturn([
             'type' => 'record',
             'name' => 'schema',
             'namespace' => 'wrong.sub',
@@ -222,7 +222,7 @@ final class ValidatorSpec extends ObjectBehavior
                 ],
             ],
         ]);
-        $recordRegistry->getSchema('foo.bar.boo')->willReturn([
+        $recordRegistry->getRecord('foo.bar.boo')->willReturn([
             'type' => 'record',
             'name' => 'boo',
             'namespace' => 'foo.bar',
@@ -255,10 +255,10 @@ final class ValidatorSpec extends ObjectBehavior
         ]);
     }
 
-    public function it_does_not_report_errors_for_valid_data(SchemaRegistryInterface $recordRegistry): void
+    public function it_does_not_report_errors_for_valid_data(RecordRegistryInterface $recordRegistry): void
     {
         $schemaName = 'foo.bar.baz';
-        $recordRegistry->getSchema($schemaName)->willReturn($this->getSampleSchema());
+        $recordRegistry->getRecord($schemaName)->willReturn($this->getSampleSchema());
 
         $payload = [
             'stringTest' => 'foo',
@@ -275,10 +275,10 @@ final class ValidatorSpec extends ObjectBehavior
         )->shouldBe([]);
     }
 
-    public function it_detects_wrong_int_vs_long_values(SchemaRegistryInterface $recordRegistry): void
+    public function it_detects_wrong_int_vs_long_values(RecordRegistryInterface $recordRegistry): void
     {
         $schemaName = 'foo.bar.baz';
-        $recordRegistry->getSchema($schemaName)->willReturn([
+        $recordRegistry->getRecord($schemaName)->willReturn([
             'type' => 'record',
             'name' => 'baz',
             'namespace' => 'foo.bar',
@@ -362,7 +362,7 @@ final class ValidatorSpec extends ObjectBehavior
         ]);
     }
 
-    public function it_handles_inlined_schemas(SchemaRegistryInterface $recordRegistry): void
+    public function it_handles_inlined_schemas(RecordRegistryInterface $recordRegistry): void
     {
         $schemaName = 'foo.bar.baz';
         $inlinedSchemaName = 'account';
@@ -390,7 +390,7 @@ final class ValidatorSpec extends ObjectBehavior
             ],
         ];
 
-        $recordRegistry->getSchema($schemaName)->willReturn([
+        $recordRegistry->getRecord($schemaName)->willReturn([
             'type' => 'record',
             'name' => 'baz',
             'namespace' => 'foo.bar',
@@ -408,10 +408,10 @@ final class ValidatorSpec extends ObjectBehavior
                 ],
             ],
         ]);
-        $recordRegistry->getSchema($inlinedSchemaName)->shouldBeCalled()->willReturn(null, $inlinedSchema);
-        $recordRegistry->addSchema($inlinedSchema)->shouldBeCalled();
-        $recordRegistry->getSchema($inlinedSchemaName2)->shouldBeCalled()->willReturn(null);
-        $recordRegistry->addSchema($inlinedSchema2)->shouldBeCalled();
+        $recordRegistry->getRecord($inlinedSchemaName)->shouldBeCalled()->willReturn(null, $inlinedSchema);
+        $recordRegistry->addRecord($inlinedSchema)->shouldBeCalled();
+        $recordRegistry->getRecord($inlinedSchemaName2)->shouldBeCalled()->willReturn(null);
+        $recordRegistry->addRecord($inlinedSchema2)->shouldBeCalled();
 
         $payload = [
             'account1' => [
@@ -426,6 +426,57 @@ final class ValidatorSpec extends ObjectBehavior
             $this->encodePayload($payload),
             $schemaName
         )->shouldBe([]);
+    }
+
+    public function it_formats_inline_schema_type_correctly(RecordRegistryInterface $recordRegistry): void
+    {
+        $schemaName = 'foo.bar.baz';
+        $inlinedSchemaName = 'account';
+
+        $inlinedSchema = [
+            'type' => 'record',
+            'name' => $inlinedSchemaName,
+            'fields' => [
+                [
+                    'name' => 'accountId',
+                    'type' => 'string',
+                ],
+            ],
+        ];
+
+        $recordRegistry->getRecord($schemaName)->willReturn([
+            'type' => 'record',
+            'name' => 'baz',
+            'namespace' => 'foo.bar',
+            'fields' => [
+                [
+                    'name' => 'account',
+                    'type' => $inlinedSchema,
+                ],
+            ],
+        ]);
+        $recordRegistry->getRecord($inlinedSchemaName)->shouldBeCalled()->willReturn(null, $inlinedSchema);
+        $recordRegistry->addRecord($inlinedSchema)->shouldBeCalled();
+
+        $invalidValue = [
+            'invalidField' => 'foobar',
+        ];
+
+        $payload = [
+            'account' => $invalidValue,
+        ];
+
+        $this->validate(
+            $this->encodePayload($payload),
+            $schemaName
+        )->shouldBe([
+            [
+                'path' => '$.account',
+                'type' => 'wrongType',
+                'message' => 'Field value was expected to be of type "account", but was "array"',
+                'value' => $invalidValue,
+            ]
+        ]);
     }
 
     private function getSampleSchema(): array

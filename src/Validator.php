@@ -42,14 +42,14 @@ final class Validator implements ValidatorInterface
     private const LONG_MAX_VALUE = 9223372036854775807;
 
     /**
-     * @var SchemaRegistryInterface
+     * @var RecordRegistryInterface
      */
     private $recordRegistry;
 
     /**
-     * @param SchemaRegistryInterface $recordRegistry
+     * @param RecordRegistryInterface $recordRegistry
      */
-    public function __construct(SchemaRegistryInterface $recordRegistry)
+    public function __construct(RecordRegistryInterface $recordRegistry)
     {
         $this->recordRegistry = $recordRegistry;
     }
@@ -64,7 +64,7 @@ final class Validator implements ValidatorInterface
     {
         $decodedPayload = json_decode($payload, true);
 
-        if (null === $recordSchema = $this->recordRegistry->getSchema($recordType)) {
+        if (null === $recordSchema = $this->recordRegistry->getRecord($recordType)) {
             throw new MissingSchemaException(sprintf('Could not find record of type "%s"', $recordType));
         }
 
@@ -136,7 +136,7 @@ final class Validator implements ValidatorInterface
                 return $type['name'];
             }
 
-            throw new \InvalidArgumentException('Could not determine name of type');
+            throw new \InvalidArgumentException('Could not determine name for type');
         }, $types);
 
         $lastEntry = array_pop($normalizedTypes);
@@ -149,7 +149,7 @@ final class Validator implements ValidatorInterface
     }
 
     /**
-     * @param array<string> $types
+     * @param array<string|array<string, mixed>> $types
      * @param mixed $fieldValue
      * @param string $currentPath
      * @param array<array<mixed>> $validationErrors
@@ -211,9 +211,9 @@ final class Validator implements ValidatorInterface
                     return true;
                 } elseif ('record' === $type['type'] && isset($type['fields'])) {
                     // Inlined schema
-                    if (null === $subRecord = $this->recordRegistry->getSchema($type['name'])) {
+                    if (null === $subRecord = $this->recordRegistry->getRecord($type['name'])) {
                         $subRecord = $type;
-                        $this->recordRegistry->addSchema($type);
+                        $this->recordRegistry->addRecord($type);
                     }
 
                     $validationErrorsSub = [];
@@ -229,7 +229,7 @@ final class Validator implements ValidatorInterface
                 }
             }
 
-            if (is_string($type) && null !== $recordSchema = $this->recordRegistry->getSchema($type)) {
+            if (is_string($type) && null !== $recordSchema = $this->recordRegistry->getRecord($type)) {
                 $validationErrorsSub = [];
                 $this->validateFields($recordSchema['fields'], $fieldValue, $currentPath, $validationErrorsSub);
 
@@ -246,6 +246,10 @@ final class Validator implements ValidatorInterface
         return false;
     }
 
+    /**
+     * @param array<array<string, mixed>> $validationErrors
+     * @return bool
+     */
     private function hasOnlyMissingFields(array $validationErrors): bool
     {
         if (0 === count($validationErrors)) {
@@ -278,7 +282,7 @@ final class Validator implements ValidatorInterface
                 $this->formatTypeList($types),
                 $this->getType($value)
             ),
-            'value' => is_scalar($value) ? $value : var_export($value, true),
+            'value' => $value,
         ];
     }
 
