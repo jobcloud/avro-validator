@@ -126,21 +126,7 @@ final class Validator implements ValidatorInterface
      */
     private function formatTypeList(array $types): string
     {
-        $normalizedTypes = array_map(function ($type): string {
-            if (!is_array($type)) {
-                return $type;
-            }
-
-            if ('array' === $type['type']) {
-                return sprintf('%s<%s>', $type['type'], $type['items']);
-            }
-
-            if ('record' === $type['type']) {
-                return $type['name'];
-            }
-
-            throw new \InvalidArgumentException('Could not determine name for type');
-        }, $types);
+        $normalizedTypes = array_map([$this, 'getTypeAsString'], $types);
 
         $lastEntry = array_pop($normalizedTypes);
 
@@ -303,5 +289,22 @@ final class Validator implements ValidatorInterface
         }
 
         return $type;
+    }
+
+    private function getTypeAsString($type): string
+    {
+        if (!is_array($type)) {
+            return $type;
+        }
+
+        if ('array' === $type['type']) {
+            return sprintf('%s<%s>', $type['type'], $this->getTypeAsString($type['items']));
+        }
+
+        if ('record' === $type['type']) {
+            return $type['name'];
+        }
+
+        throw new \InvalidArgumentException('Could not determine name for type');
     }
 }
