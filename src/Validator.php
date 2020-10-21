@@ -291,6 +291,10 @@ final class Validator implements ValidatorInterface
         return $type;
     }
 
+    /**
+     * @param mixed $type
+     * @return string
+     */
     private function getTypeAsString($type): string
     {
         if (!is_array($type)) {
