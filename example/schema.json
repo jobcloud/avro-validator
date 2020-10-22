@@ -52,17 +52,17 @@
       },
       {
         "name": "unitPrice",
-        "type": "double"
+        "type": "int"
       },
       {
         "name": "total",
-        "type": "double"
+        "type": "int"
       },
       {
         "name": "unitsTotal",
         "type": [
           "null",
-          "double"
+          "int"
         ],
         "default": null
       },
@@ -172,7 +172,7 @@
     "fields": [
       {
         "name": "id",
-        "type": "int"
+        "type": "string"
       }
     ]
   },
@@ -183,7 +183,7 @@
     "fields": [
       {
         "name": "id",
-        "type": "string"
+        "type": "int"
       },
       {
         "name": "orderNumber",
@@ -226,11 +226,11 @@
       },
       {
         "name": "itemsTotal",
-        "type": "double"
+        "type": "int"
       },
       {
         "name": "total",
-        "type": "double"
+        "type": "int"
       }
     ]
   }

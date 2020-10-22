@@ -1,0 +1,18 @@
+includes:
+  - vendor/phpstan/phpstan-strict-rules/rules.neon
+  - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+
+parameters:
+  level: 7
+  treatPhpDocTypesAsCertain: false
+  paths:
+    - app
+  ignoreErrors:
+    - '#Comparison operation "<=" between int and 9223372036854775807 is always true\.#'
+
+rules:
+  - Ergebnis\PHPStan\Rules\Expressions\NoEmptyRule
+  - Ergebnis\PHPStan\Rules\Files\DeclareStrictTypesRule
+  - Ergebnis\PHPStan\Rules\Expressions\NoErrorSuppressionRule
+  - Ergebnis\PHPStan\Rules\Expressions\NoEvalRule
+  - Ergebnis\PHPStan\Rules\Methods\PrivateInFinalClassRule
