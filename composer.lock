@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ef80af82d920f1236c138dc4afa8bf89",
+    "content-hash": "9bef00a8e7404a8410048817ef596b9c",
     "packages": [
         {
             "name": "psr/container",
@@ -1142,25 +1142,25 @@
         },
         {
             "name": "infection/infection",
-            "version": "0.17.7",
+            "version": "0.18.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/infection/infection.git",
-                "reference": "3a35481822b795e021907e5a80d7b622e4d97be0"
+                "reference": "7eb647d02fd42bc9323058c0d7d4dc36c678bfca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/infection/infection/zipball/3a35481822b795e021907e5a80d7b622e4d97be0",
-                "reference": "3a35481822b795e021907e5a80d7b622e4d97be0",
+                "url": "https://api.github.com/repos/infection/infection/zipball/7eb647d02fd42bc9323058c0d7d4dc36c678bfca",
+                "reference": "7eb647d02fd42bc9323058c0d7d4dc36c678bfca",
                 "shasum": ""
             },
             "require": {
-                "composer/package-versions-deprecated": "^1.2",
+                "composer/package-versions-deprecated": "^1.2 || ^2.0",
                 "composer/xdebug-handler": "^1.3.3",
                 "ext-dom": "*",
                 "ext-json": "*",
                 "ext-libxml": "*",
-                "infection/abstract-testframework-adapter": "^0.3.0",
+                "infection/abstract-testframework-adapter": "^0.3.1",
                 "infection/extension-installer": "^0.1.0",
                 "infection/include-interceptor": "^0.2.4",
                 "justinrainbow/json-schema": "^5.2",
@@ -1180,18 +1180,18 @@
             },
             "conflict": {
                 "phpunit/php-code-coverage": ">9 <9.1.4",
-                "phpunit/phpunit": ">=9.3",
                 "symfony/console": "=4.1.5"
             },
             "require-dev": {
                 "ext-simplexml": "*",
                 "helmich/phpunit-json-assert": "^3.0",
+                "phpspec/prophecy-phpunit": "^2.0",
                 "phpstan/extension-installer": "^1.0",
                 "phpstan/phpstan": "^0.12.8",
                 "phpstan/phpstan-phpunit": "^0.12.6",
                 "phpstan/phpstan-webmozart-assert": "^0.12.2",
-                "phpunit/phpunit": "^8.2.5 <8.4",
-                "symfony/phpunit-bridge": "^4.3.4 || ^5.0",
+                "phpunit/phpunit": "^9.3.11",
+                "symfony/phpunit-bridge": "^4.4.14 || ^5.1.6",
                 "symfony/yaml": "^5.0",
                 "thecodingmachine/phpstan-safe-rule": "^1.0"
             },
@@ -1249,9 +1249,9 @@
             ],
             "support": {
                 "issues": "https://github.com/infection/infection/issues",
-                "source": "https://github.com/infection/infection/tree/0.17.7"
+                "source": "https://github.com/infection/infection/tree/0.18.1"
             },
-            "time": "2020-10-13T21:51:12+00:00"
+            "time": "2020-10-21T12:43:44+00:00"
         },
         {
             "name": "infection/phpspec-adapter",
