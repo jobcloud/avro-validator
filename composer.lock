@@ -1142,16 +1142,16 @@
         },
         {
             "name": "infection/infection",
-            "version": "0.17.6",
+            "version": "0.17.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/infection/infection.git",
-                "reference": "941d40af2de0890dc1dcf679850124d12c9556c3"
+                "reference": "3a35481822b795e021907e5a80d7b622e4d97be0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/infection/infection/zipball/941d40af2de0890dc1dcf679850124d12c9556c3",
-                "reference": "941d40af2de0890dc1dcf679850124d12c9556c3",
+                "url": "https://api.github.com/repos/infection/infection/zipball/3a35481822b795e021907e5a80d7b622e4d97be0",
+                "reference": "3a35481822b795e021907e5a80d7b622e4d97be0",
                 "shasum": ""
             },
             "require": {
@@ -1247,7 +1247,11 @@
                 "testing",
                 "unit testing"
             ],
-            "time": "2020-10-02T07:20:09+00:00"
+            "support": {
+                "issues": "https://github.com/infection/infection/issues",
+                "source": "https://github.com/infection/infection/tree/0.17.7"
+            },
+            "time": "2020-10-13T21:51:12+00:00"
         },
         {
             "name": "infection/phpspec-adapter",
