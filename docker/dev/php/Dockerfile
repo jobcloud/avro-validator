@@ -1,7 +1,5 @@
 FROM php:7.3-cli-alpine3.12
 
-# https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
-ENV COMPOSER_ALLOW_SUPERUSER 1
 ARG HOST_USER_ID
 
 # PHP: Copy configuration files & remove dist files
