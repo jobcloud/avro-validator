@@ -172,6 +172,59 @@ final class ValidatorSpec extends ObjectBehavior
         ]);
     }
 
+    public function it_validates_array_items_record(RecordRegistryInterface $recordRegistry): void
+    {
+        $nestedRecord = [
+            'type' => 'record',
+            'name' => 'bazoo',
+            'namespace' => 'foo.bar',
+            'fields' => [
+                [
+                    'name' => 'nestedRecord',
+                    'type' => 'string'
+                ]
+            ]
+        ];
+
+        $schemaName = 'foo.bar.baz';
+        $recordRegistry->getRecord('bazoo')->willReturn(null);
+        $recordRegistry->addRecord($nestedRecord);
+        $recordRegistry->getRecord($schemaName)->willReturn([
+            'type' => 'record',
+            'name' => 'baz',
+            'namespace' => 'foo.bar',
+            'fields' => [
+                [
+                    'name' => 'arrayTest',
+                    'type' => [
+                        'type' => 'array',
+                        'items' => $nestedRecord,
+                    ],
+                ],
+            ],
+        ]);
+
+        $payload = [
+            'arrayTest' => [
+                [
+                    'nestedRecord' => 1
+                ]
+            ],
+        ];
+
+        $this->validate(
+            $this->encodePayload($payload),
+            $schemaName
+        )->shouldBe([
+            [
+                'path' => '$.arrayTest[0].nestedRecord',
+                'type' => 'wrongType',
+                'message' => 'Field value was expected to be of type "string", but was "int"',
+                'value' => 1,
+            ],
+        ]);
+    }
+
     public function it_throws_exception_for_unsupported_type_enum(RecordRegistryInterface $recordRegistry): void
     {
         $schemaName = 'foo.bar.baz';
