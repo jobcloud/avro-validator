@@ -26,7 +26,7 @@
   "bin": ["bin/avro-validator"],
   "config": {
     "allow-plugins": {
-      "composer/package-versions-deprecated": false,
+      "composer/package-versions-deprecated": true,
       "infection/extension-installer": true
     }
   }
