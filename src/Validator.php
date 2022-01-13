@@ -186,6 +186,10 @@ final class Validator implements ValidatorInterface
                 if ('array' === $type['type'] && is_array($fieldValue)) {
                     $types = (array) $type['items'];
 
+                    if (isset($types['type']) && 'record' === $types['type']) {
+                        $types = [$types];
+                    }
+
                     foreach ($fieldValue as $key => $value) {
                         $itemPath = sprintf('%s[%s]', $currentPath, $key);
                         if (false === $this->checkFieldValueBeOneOf($types, $value, $itemPath, $validationErrors)) {
