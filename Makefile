@@ -1,9 +1,10 @@
-.PHONY: clean code-style coverage help test test-unit test-integration static-analysis infection-testing install-dependencies update-dependencies
+.PHONY: clean fix-code-style code-style coverage help test test-unit test-integration static-analysis infection-testing install-dependencies update-dependencies
 .DEFAULT_GOAL := help
 
 PHPSPEC = ./vendor/bin/phpspec run --format dot -vvv -c phpspec.yml
-PHPSTAN  = ./vendor/bin/phpstan
+PHPSTAN  = ./vendor/bin/phpstan analyse
 PHPCS = ./vendor/bin/phpcs --extensions=php
+PHPCBF = ./vendor/bin/phpcbf ./src --standard=PSR12
 INFECTION = ./vendor/bin/infection
 CONSOLE = ./bin/console
 
@@ -15,7 +16,7 @@ fix-code-style:
 
 code-style:
 	mkdir -p build/logs/phpcs
-	${PHPCS}
+	${PHPCS} --report-junit=build/logs/phpcs/junit.xml
 
 coverage:
 	mkdir -p build/logs/phpspec/coverage
@@ -33,7 +34,7 @@ infection-testing:
 	${INFECTION} --test-framework=phpspec --only-covered --coverage=build/logs/phpspec/coverage --min-msi=88 --threads=`nproc`
 
 static-analysis:
-	${PHPSTAN} analyse src --no-progress
+	${PHPSTAN} src --no-progress
 
 install-dependencies:
 	composer install
