@@ -23,5 +23,11 @@
       "Jobcloud\\Avro\\Validator\\": "src/"
     }
   },
-  "bin": ["bin/avro-validator"]
+  "bin": ["bin/avro-validator"],
+  "config": {
+    "allow-plugins": {
+      "composer/package-versions-deprecated": true,
+      "infection/extension-installer": true
+    }
+  }
 }
