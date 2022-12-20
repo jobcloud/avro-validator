@@ -33,7 +33,7 @@ final class Validator implements ValidatorInterface
     private const INT_MAX_VALUE = 2147483647;
 
     /**
-     * @var int lower bound of long values: -(1 << 63)
+     * @var float lower bound of long values: -(1 << 63)
      */
     private const LONG_MIN_VALUE = -9223372036854775808;
 

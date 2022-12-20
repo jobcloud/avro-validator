@@ -7,6 +7,11 @@ parameters:
   treatPhpDocTypesAsCertain: false
   paths:
     - app
+  ignoreErrors:
+    -
+      message: '/Property [a-zA-Z\\]+::\$[a-zA-Z]+ is never read, only written\./'
+      paths:
+          - %currentWorkingDirectory%/src/Command/*
 
 rules:
   - Ergebnis\PHPStan\Rules\Expressions\NoEmptyRule
