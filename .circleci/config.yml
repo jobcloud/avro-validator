@@ -43,7 +43,7 @@ workflows:
   daily:
     triggers:
       - schedule:
-          cron: "22 9 * * *"
+          cron: "26 9 * * *"
           filters:
             branches:
               only:
