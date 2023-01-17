@@ -18,7 +18,7 @@ RUN if [ -n "$HOST_USER_ID" ] && [ "$HOST_USER_ID" -lt 60001 ]; then \
     fi
 
 # COMPOSER: install binary and prestissimo
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer --version=2.5.1
 
 # PHP: Install php extensions
 RUN pecl channel-update pecl.php.net && \
