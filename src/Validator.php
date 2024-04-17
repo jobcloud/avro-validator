@@ -93,7 +93,7 @@ final class Validator implements ValidatorInterface
         foreach ($schemaFields as $rule) {
             $fieldName = $rule['name'];
 
-            if (false === array_key_exists($fieldName, $payload)) {
+            if (false === array_key_exists($fieldName, $payload) && false == array_key_exists('default', $rule)) {
                 $validationErrors[] = [
                     'path' => $path,
                     'type' => self::ERROR_TYPE_MISSING_FIELD,
@@ -103,7 +103,7 @@ final class Validator implements ValidatorInterface
             }
 
             $types = isset($rule['type']['type']) ? [$rule['type']] : (array) $rule['type'];
-            $fieldValue = $payload[$fieldName];
+            $fieldValue = $payload[$fieldName] ?? $rule['default'];
             $currentPath = $path . '.' . $fieldName;
 
             if (false === $this->checkFieldValueBeOneOf($types, $fieldValue, $currentPath, $validationErrors)) {
