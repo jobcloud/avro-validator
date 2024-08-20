@@ -103,7 +103,7 @@ final class Validator implements ValidatorInterface
             }
 
             $types = isset($rule['type']['type']) ? [$rule['type']] : (array) $rule['type'];
-            $fieldValue = $payload[$fieldName] ?? $rule['default'];
+            $fieldValue = array_key_exists($fieldName, $payload) ? $payload[$fieldName] : $rule['default']
             $currentPath = $path . '.' . $fieldName;
 
             if (false === $this->checkFieldValueBeOneOf($types, $fieldValue, $currentPath, $validationErrors)) {
