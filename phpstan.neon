@@ -3,10 +3,10 @@ includes:
   - vendor/phpstan/phpstan-deprecation-rules/rules.neon
 
 parameters:
-  level: 7
+  level: 8
   treatPhpDocTypesAsCertain: false
   paths:
-    - app
+    - src
   ignoreErrors:
     -
       message: '/Property [a-zA-Z\\]+::\$[a-zA-Z]+ is never read, only written\./'
@@ -14,7 +14,6 @@ parameters:
           - %currentWorkingDirectory%/src/Command/*
 
 rules:
-  - Ergebnis\PHPStan\Rules\Expressions\NoEmptyRule
   - Ergebnis\PHPStan\Rules\Files\DeclareStrictTypesRule
   - Ergebnis\PHPStan\Rules\Expressions\NoErrorSuppressionRule
   - Ergebnis\PHPStan\Rules\Expressions\NoEvalRule
