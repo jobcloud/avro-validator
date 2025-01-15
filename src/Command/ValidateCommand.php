@@ -49,7 +49,7 @@ final class ValidateCommand extends Command
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         /** @var string $schemaFilePath */
         $schemaFilePath = $input->getArgument(self::ARG_SCHEMA);
