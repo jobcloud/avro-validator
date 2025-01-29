@@ -2,7 +2,7 @@
   "name": "jobcloud/avro-validator",
   "license": "MIT",
   "require": {
-    "php": "^8.0",
+    "php": "^8.3",
     "ext-json": "*",
     "symfony/console": "^5.1.5 || ^6.0 || ^7.0"
   },
