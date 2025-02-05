@@ -15,7 +15,7 @@
     "phpstan/phpstan-strict-rules": "^1.4.0",
     "rregeer/phpunit-coverage-check": "^0.3.1",
     "squizlabs/php_codesniffer": "^3.4.2",
-    "infection/infection": "^0.26 || ^0.29",
+    "infection/infection": "^0.29",
     "infection/phpspec-adapter": "^0.2.1"
   },
   "autoload": {
