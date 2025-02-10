@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/php:8.3-cli-alpine3.20
+FROM public.ecr.aws/docker/library/php:8.3-cli-alpine3.21
 
 ARG HOST_USER_ID
 
