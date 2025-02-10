@@ -1,4 +1,4 @@
-.PHONY: clean fix-code-style code-style coverage help test test-unit test-integration static-analysis infection-testing install-dependencies update-dependencies
+.PHONY: clean fix-code-style code-style coverage help test test-unit static-analysis infection-testing install-dependencies update-dependencies
 .DEFAULT_GOAL := help
 
 PHPSPEC = ./vendor/bin/phpspec run --format dot -vvv -c phpspec.yml
@@ -23,7 +23,7 @@ coverage:
 	php -dpcov.enabled=1 -dpcov.directory=./src ${PHPSPEC}
 	./vendor/bin/coverage-check build/logs/phpspec/coverage/coverage.xml 98
 
-test: test-unit test-integration
+test: test-unit
 
 test-unit:
 	${PHPSPEC} --no-coverage
