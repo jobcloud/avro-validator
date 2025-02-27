@@ -90,6 +90,7 @@ final class ValidatorSpec extends ObjectBehavior
             'doubleTest' => $invalidDoubleValue,
             'arrayTest' => $invalidArrayValue,
             'multipleTypeTest' => $invalidNullOrArrayValue,
+            'stringDefaultTest' => $invalidStringValue,
         ];
 
         $this->validate(
@@ -131,6 +132,12 @@ final class ValidatorSpec extends ObjectBehavior
                 'type' => 'wrongType',
                 'message' => 'Field value was expected to be of type "null" or "array", but was "int"',
                 'value' => $invalidNullOrArrayValue,
+            ],
+            [
+                'path' => '$.stringDefaultTest',
+                'type' => 'wrongType',
+                'message' => 'Field value was expected to be of type "string", but was "int"',
+                'value' => $invalidStringValue,
             ],
         ]);
     }
@@ -320,6 +327,7 @@ final class ValidatorSpec extends ObjectBehavior
             'doubleTest' => 42.0,
             'arrayTest' => ['foo', 'bar'],
             'multipleTypeTest' => null,
+            'stringDefaultTest' => 'foo',
         ];
 
         $this->validate(
@@ -565,6 +573,11 @@ final class ValidatorSpec extends ObjectBehavior
                 [
                     'name' => 'multipleTypeTest',
                     'type' => ['null', 'array'],
+                ],
+                [
+                    'name' => 'stringDefaultTest',
+                    'type' => 'string',
+                    'default' => 'foo',
                 ],
             ],
         ];
