@@ -4,7 +4,7 @@
   "require": {
     "php": "^8.3",
     "ext-json": "*",
-      "symfony/console": "^7.2"
+    "symfony/console": "^7.2"
   },
   "require-dev": {
     "ergebnis/phpstan-rules": "^2.5",
