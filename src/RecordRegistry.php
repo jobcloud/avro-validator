@@ -11,7 +11,7 @@ final class RecordRegistry implements RecordRegistryInterface
     /**
      * @var array<string, array<mixed>>
      */
-    private $records;
+    private array $records;
 
     /**
      * @param array<array<mixed>> $recordTypes
@@ -38,19 +38,17 @@ final class RecordRegistry implements RecordRegistryInterface
      * @param string $identifier
      * @return array<mixed>|null
      */
+    #[\Override]
     public function getRecord(string $identifier): ?array
     {
-        if (isset($this->records[$identifier])) {
-            return $this->records[$identifier];
-        }
-
-        return null;
+        return $this->records[$identifier] ?? null;
     }
 
     /**
      * @param array<string, mixed> $record
      * @throws RecordRegistryException
      */
+    #[\Override]
     public function addRecord(array $record): void
     {
         $this->records[$this->determineRecordIdentifier($record)] = $record;

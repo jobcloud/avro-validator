@@ -6,44 +6,21 @@ namespace Jobcloud\Avro\Validator\Command\Formatter;
 
 use Symfony\Component\Console\Output\OutputInterface;
 
-final class PrettyFormatter implements FormatterInterface
+final readonly class PrettyFormatter implements FormatterInterface
 {
-    /**
-     * @var OutputInterface
-     */
-    private $output;
-
-    /**
-     * @var string
-     */
-    private $schemaNamespace;
-
-    /**
-     * @var string
-     */
-    private $schemaPath;
-
-    /**
-     * @var string
-     */
-    private $payloadPath;
-
     public function __construct(
-        OutputInterface $output,
-        string $schemaNamespace,
-        string $schemaPath,
-        string $payloadPath
+        private OutputInterface $output,
+        private string $schemaNamespace,
+        private string $schemaPath,
+        private string $payloadPath
     ) {
-        $this->output = $output;
-        $this->schemaNamespace = $schemaNamespace;
-        $this->schemaPath = $schemaPath;
-        $this->payloadPath = $payloadPath;
     }
 
     /**
      * @param array<array<mixed>> $result
      * @return void
      */
+    #[\Override]
     public function formatSuccess(array $result): void
     {
         $this->output->writeln(sprintf(
@@ -56,6 +33,7 @@ final class PrettyFormatter implements FormatterInterface
      * @param array<array<mixed>> $result
      * @return void
      */
+    #[\Override]
     public function formatFail(array $result): void
     {
         $this->output->writeln(sprintf(
@@ -77,10 +55,9 @@ final class PrettyFormatter implements FormatterInterface
     }
 
     /**
-     * @param mixed $value
      * @return string
      */
-    private function formatValue($value): string
+    private function formatValue(mixed $value): string
     {
         if (is_string($value)) {
             return sprintf('"%s"', $value);

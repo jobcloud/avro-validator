@@ -16,20 +16,21 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class ValidateCommand extends Command
 {
-    private const ARG_PAYLOAD = 'payload';
+    private const string ARG_PAYLOAD = 'payload';
 
-    private const ARG_SCHEMA = 'schema';
+    private const string ARG_SCHEMA = 'schema';
 
-    private const ARG_NAMESPACE = 'namespace';
+    private const string ARG_NAMESPACE = 'namespace';
 
-    private const OPTION_FORMAT = 'format';
+    private const string OPTION_FORMAT = 'format';
 
-    private const FORMAT_PRETTY = 'pretty';
+    private const string FORMAT_PRETTY = 'pretty';
 
-    private const FORMAT_JSON = 'json';
+    private const string FORMAT_JSON = 'json';
 
-    private const SUPPORTED_FORMATS = [self::FORMAT_PRETTY, self::FORMAT_JSON];
+    private const array SUPPORTED_FORMATS = [self::FORMAT_PRETTY, self::FORMAT_JSON];
 
+    #[\Override]
     protected function configure(): void
     {
         parent::configure();
@@ -49,6 +50,7 @@ final class ValidateCommand extends Command
             );
     }
 
+    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         /** @var string $schemaFilePath */

@@ -10,49 +10,43 @@ use Jobcloud\Avro\Validator\Exception\RecordRegistryException;
 use Jobcloud\Avro\Validator\Exception\UnsupportedTypeException;
 use Jobcloud\Avro\Validator\Exception\ValidatorException;
 
-final class Validator implements ValidatorInterface
+final readonly class Validator implements ValidatorInterface
 {
     /**
      * @var string
      */
-    public const ERROR_TYPE_MISSING_FIELD = 'missingField';
+    public const string ERROR_TYPE_MISSING_FIELD = 'missingField';
 
     /**
      * @var string
      */
-    public const ERROR_TYPE_WRONG_TYPE = 'wrongType';
+    public const string ERROR_TYPE_WRONG_TYPE = 'wrongType';
 
     /**
      * @var int lower bound of integer values: -(1 << 31)
      */
-    private const INT_MIN_VALUE = -2147483648;
+    private const int INT_MIN_VALUE = -2147483648;
 
     /**
      * @var int upper bound of integer values: (1 << 31) - 1
      */
-    private const INT_MAX_VALUE = 2147483647;
+    private const int INT_MAX_VALUE = 2147483647;
 
     /**
      * @var float lower bound of long values: -(1 << 63)
      */
-    private const LONG_MIN_VALUE = -9223372036854775808;
+    private const float LONG_MIN_VALUE = -9223372036854775808;
 
     /**
      * @var int upper bound of long values: (1 << 63) - 1
      */
-    private const LONG_MAX_VALUE = 9223372036854775807;
-
-    /**
-     * @var RecordRegistryInterface
-     */
-    private $recordRegistry;
+    private const int LONG_MAX_VALUE = 9223372036854775807;
 
     /**
      * @param RecordRegistryInterface $recordRegistry
      */
-    public function __construct(RecordRegistryInterface $recordRegistry)
+    public function __construct(private RecordRegistryInterface $recordRegistry)
     {
-        $this->recordRegistry = $recordRegistry;
     }
 
     /**
@@ -62,6 +56,7 @@ final class Validator implements ValidatorInterface
      * @throws ValidatorException
      * @throws RecordRegistryException
      */
+    #[\Override]
     public function validate(string $payload, string $recordType): array
     {
         $decodedPayload = json_decode($payload, true);
@@ -113,7 +108,6 @@ final class Validator implements ValidatorInterface
                     $types,
                     $fieldValue
                 );
-                continue;
             }
         }
 
@@ -139,7 +133,6 @@ final class Validator implements ValidatorInterface
 
     /**
      * @param array<string|array<string, mixed>> $types
-     * @param mixed $fieldValue
      * @param string $currentPath
      * @param array<array<mixed>> $validationErrors
      * @return bool
@@ -148,18 +141,16 @@ final class Validator implements ValidatorInterface
      */
     private function checkFieldValueBeOneOf(
         array $types,
-        $fieldValue,
+        mixed $fieldValue,
         string $currentPath,
         array &$validationErrors
     ): bool {
         $scalarTypes = [
             'null' => 'is_null',
-            'int' => static function ($value): bool {
-                return is_int($value) && self::INT_MIN_VALUE <= $value && $value <= self::INT_MAX_VALUE;
-            },
-            'long' => static function ($value): bool {
-                return is_int($value) && self::LONG_MIN_VALUE <= $value && $value <= self::LONG_MAX_VALUE;
-            },
+            'int' => static fn($value): bool => is_int($value)
+                && self::INT_MIN_VALUE <= $value && $value <= self::INT_MAX_VALUE,
+            'long' => static fn($value): bool => is_int($value)
+                && self::LONG_MIN_VALUE <= $value && $value <= self::LONG_MAX_VALUE,
             'string' => 'is_string',
             'boolean' => 'is_bool',
             'float' => 'is_float',
@@ -263,10 +254,9 @@ final class Validator implements ValidatorInterface
      * @param string $path
      * @param string $errorType
      * @param array<string> $types
-     * @param mixed $value
      * @return array<string, mixed>
      */
-    private function createValidationError(string $path, string $errorType, array $types, $value): array
+    private function createValidationError(string $path, string $errorType, array $types, mixed $value): array
     {
         return [
             'path' => $path,
@@ -281,10 +271,9 @@ final class Validator implements ValidatorInterface
     }
 
     /**
-     * @param mixed $value
      * @return string
      */
-    private function getType($value): string
+    private function getType(mixed $value): string
     {
         $type = gettype($value);
 
@@ -296,10 +285,9 @@ final class Validator implements ValidatorInterface
     }
 
     /**
-     * @param mixed $type
      * @return string
      */
-    private function getTypeAsString($type): string
+    private function getTypeAsString(mixed $type): string
     {
         if (!is_array($type)) {
             return $type;

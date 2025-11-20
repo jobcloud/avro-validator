@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/php:8.3-cli-alpine3.21
+FROM public.ecr.aws/docker/library/php:8.4-cli-alpine3.22
 
 ARG HOST_USER_ID
 
@@ -19,11 +19,10 @@ RUN if [ -n "$HOST_USER_ID" ] && [ "$HOST_USER_ID" -lt 60001 ]; then \
 
 # COMPOSER: install binary and prestissimo
 COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
+COPY --from=ghcr.io/php/pie:1.2.1-bin /pie /usr/bin/pie
 
 # PHP: Install php extensions
-RUN pecl channel-update pecl.php.net && \
-    pecl install pcov && \
-    php-ext-enable pcov
+RUN pie install pecl/pcov
 
 USER www-data
 

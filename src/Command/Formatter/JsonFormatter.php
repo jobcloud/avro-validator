@@ -6,22 +6,17 @@ namespace Jobcloud\Avro\Validator\Command\Formatter;
 
 use Symfony\Component\Console\Output\OutputInterface;
 
-final class JsonFormatter implements FormatterInterface
+final readonly class JsonFormatter implements FormatterInterface
 {
-    /**
-     * @var OutputInterface
-     */
-    private $output;
-
-    public function __construct(OutputInterface $output)
+    public function __construct(private OutputInterface $output)
     {
-        $this->output = $output;
     }
 
     /**
      * @param array<array<mixed>> $result
      * @return void
      */
+    #[\Override]
     public function formatSuccess(array $result): void
     {
         $this->output->writeln($this->encodeResult($result));
@@ -31,6 +26,7 @@ final class JsonFormatter implements FormatterInterface
      * @param array<array<mixed>> $result
      * @return void
      */
+    #[\Override]
     public function formatFail(array $result): void
     {
         $this->output->writeln($this->encodeResult($result));
