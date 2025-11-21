@@ -16,7 +16,7 @@
     "rregeer/phpunit-coverage-check": "^0.3",
     "squizlabs/php_codesniffer": "^4.0",
     "infection/infection": "^0.29",
-    "infection/phpspec-adapter": "^0.2",
+    "infection/phpspec-adapter": "^0.2"
   },
   "autoload": {
     "psr-4": {
