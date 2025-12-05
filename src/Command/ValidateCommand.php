@@ -6,6 +6,7 @@ namespace Jobcloud\Avro\Validator\Command;
 
 use Jobcloud\Avro\Validator\Command\Formatter\JsonFormatter;
 use Jobcloud\Avro\Validator\Command\Formatter\PrettyFormatter;
+use Jobcloud\Avro\Validator\Enum\OutputFormat;
 use Jobcloud\Avro\Validator\RecordRegistry;
 use Jobcloud\Avro\Validator\Validator;
 use Symfony\Component\Console\Command\Command;
@@ -24,11 +25,7 @@ final class ValidateCommand extends Command
 
     private const string OPTION_FORMAT = 'format';
 
-    private const string FORMAT_PRETTY = 'pretty';
-
-    private const string FORMAT_JSON = 'json';
-
-    private const array SUPPORTED_FORMATS = [self::FORMAT_PRETTY, self::FORMAT_JSON];
+    private const array SUPPORTED_FORMATS = [OutputFormat::PRETTY->value, OutputFormat::JSON->value];
 
     #[\Override]
     protected function configure(): void
@@ -46,16 +43,14 @@ final class ValidateCommand extends Command
                 'f',
                 InputOption::VALUE_REQUIRED,
                 'Output format of the result',
-                self::FORMAT_PRETTY
+                OutputFormat::PRETTY->value
             );
     }
 
     #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        /** @var string $schemaFilePath */
         $schemaFilePath = $input->getArgument(self::ARG_SCHEMA);
-        /** @var string $schemaNamespace */
         $schemaNamespace = $input->getArgument(self::ARG_NAMESPACE);
 
         $readStreams = [STDIN];
@@ -74,7 +69,6 @@ final class ValidateCommand extends Command
         if ($hasPayloadFromStdin) {
             $payloadFilePath = 'php://stdin';
         } elseif ($hasPayloadFromFile) {
-            /** @var string $payloadFilePath */
             $payloadFilePath = $input->getArgument(self::ARG_PAYLOAD);
         }
 
@@ -91,12 +85,11 @@ final class ValidateCommand extends Command
         $recordRegistry = RecordRegistry::fromSchema($schemaData);
         $validator = new Validator($recordRegistry);
 
-        /** @var string $outputFormat */
         $outputFormat = $input->getOption(self::OPTION_FORMAT);
 
-        if (self::FORMAT_PRETTY === $outputFormat) {
-            $formatter = new PrettyFormatter($output, $schemaNamespace, $schemaFilePath, $payloadFilePath);
-        } elseif (self::FORMAT_JSON === $outputFormat) {
+        if (OutputFormat::PRETTY->value === $outputFormat) {
+            $formatter = new PrettyFormatter($output, $schemaNamespace);
+        } elseif (OutputFormat::JSON->value === $outputFormat) {
             $formatter = new JsonFormatter($output);
         } else {
             $output->writeln(sprintf(

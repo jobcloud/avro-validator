@@ -25,17 +25,12 @@ final class RecordRegistry implements RecordRegistryInterface
         }
     }
 
-    /**
-     * @param string $schema
-     * @return self
-     */
     public static function fromSchema(string $schema): self
     {
         return new self([json_decode($schema, true)]);
     }
 
     /**
-     * @param string $identifier
      * @return array<mixed>|null
      */
     #[\Override]
@@ -56,7 +51,6 @@ final class RecordRegistry implements RecordRegistryInterface
 
     /**
      * @param array<string, mixed> $record
-     * @return string
      * @throws RecordRegistryException
      */
     private function determineRecordIdentifier(array $record): string
@@ -71,8 +65,6 @@ final class RecordRegistry implements RecordRegistryInterface
             throw new RecordRegistryException('Provided schema does not have a name');
         }
 
-        $identifier .= $record['name'];
-
-        return $identifier;
+        return $identifier . $record['name'];
     }
 }

@@ -3,7 +3,6 @@
 namespace spec\Jobcloud\Avro\Validator;
 
 use Jobcloud\Avro\Validator\Exception\RecordRegistryException;
-use Jobcloud\Avro\Validator\RecordRegistry;
 use PhpSpec\ObjectBehavior;
 
 final class RecordRegistrySpec extends ObjectBehavior

@@ -6,7 +6,6 @@ use Jobcloud\Avro\Validator\Exception\InvalidSchemaException;
 use Jobcloud\Avro\Validator\Exception\MissingSchemaException;
 use Jobcloud\Avro\Validator\Exception\UnsupportedTypeException;
 use Jobcloud\Avro\Validator\RecordRegistryInterface;
-use Jobcloud\Avro\Validator\Validator;
 use PhpSpec\ObjectBehavior;
 
 final class ValidatorSpec extends ObjectBehavior

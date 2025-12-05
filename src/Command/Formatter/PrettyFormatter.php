@@ -10,15 +10,12 @@ final readonly class PrettyFormatter implements FormatterInterface
 {
     public function __construct(
         private OutputInterface $output,
-        private string $schemaNamespace,
-        private string $schemaPath,
-        private string $payloadPath
+        private string $schemaNamespace
     ) {
     }
 
     /**
      * @param array<array<mixed>> $result
-     * @return void
      */
     #[\Override]
     public function formatSuccess(array $result): void
@@ -31,7 +28,6 @@ final readonly class PrettyFormatter implements FormatterInterface
 
     /**
      * @param array<array<mixed>> $result
-     * @return void
      */
     #[\Override]
     public function formatFail(array $result): void
@@ -47,16 +43,17 @@ final readonly class PrettyFormatter implements FormatterInterface
             $this->output->writeln('');
             $this->output->writeln(sprintf(' - Field: <info>%s</info>', $error['path']));
             $this->output->writeln(sprintf('   Message: %s', $error['message']));
-            $this->output->writeln(sprintf(
-                '   Value: <comment>%s</comment>',
-                $this->formatValue($error['value'])
-            ));
+            $errorValue = $error['value'] ?? null;
+
+            if (null !== $errorValue) {
+                $this->output->writeln(sprintf(
+                    '   Value: <comment>%s</comment>',
+                    $this->formatValue($errorValue)
+                ));
+            }
         }
     }
 
-    /**
-     * @return string
-     */
     private function formatValue(mixed $value): string
     {
         if (is_string($value)) {
