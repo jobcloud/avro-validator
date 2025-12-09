@@ -4,6 +4,17 @@ orbs:
   ci-caching: jobcloud/ci-caching@3.2
   ci-php: jobcloud/ci-php@2.12
 
+commands:
+  setup-ssh:
+    steps:
+      - checkout
+      - run:
+          name: Add GitHub to known_hosts
+          command: |
+            mkdir -p ~/.ssh
+            ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
+            chmod 644 ~/.ssh/known_hosts
+
 workflows:
   version: 2
   test-avro-validator:
@@ -24,13 +35,6 @@ workflows:
       - ci-php/code-style:
           context: dockerhub-credentials
           dependencyCheckSumFile: "./composer.json"
-          pre-steps:
-            - run:
-                name: Add GitHub to known_hosts
-                command: |
-                  mkdir -p ~/.ssh
-                  ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
-                  chmod 644 ~/.ssh/known_hosts
           requires:
             - ci-php/install-dependencies
       - ci-php/static-analysis:
