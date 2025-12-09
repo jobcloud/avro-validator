@@ -1,6 +1,12 @@
 FROM public.ecr.aws/docker/library/php:8.4-cli-alpine3.22
 
+# PIE: Install PIE binary
+COPY --from=ghcr.io/php/pie:1.2.1-bin /pie /usr/bin/pie
+
 ARG HOST_USER_ID
+
+# COMPOSER: install binary
+COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
 
 # PHP: Copy configuration files & remove dist files
 RUN mkdir /phpIni
@@ -17,18 +23,8 @@ RUN if [ -n "$HOST_USER_ID" ] && [ "$HOST_USER_ID" -lt 60001 ]; then \
         usermod -u ${HOST_USER_ID} -o www-data; \
     fi
 
-# COMPOSER: install binary and prestissimo
-COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
-COPY --from=ghcr.io/php/pie:1.2.1-bin /pie /usr/bin/pie
-
 # PHP: Install php extensions
 RUN pie install pecl/pcov
-
-# Add GitHub's SSH host key to known_hosts (for www-data user)
-RUN mkdir -p /var/www/.ssh && chmod 700 /var/www/.ssh \
-    && ssh-keyscan -t ed25519 github.com >> /var/www/.ssh/known_hosts \
-    && chmod 644 /var/www/.ssh/known_hosts \
-    && chown -R www-data:www-data /var/www/.ssh
 
 USER www-data
 
