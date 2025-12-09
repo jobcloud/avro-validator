@@ -24,6 +24,12 @@ COPY --from=ghcr.io/php/pie:1.2.1-bin /pie /usr/bin/pie
 # PHP: Install php extensions
 RUN pie install pecl/pcov
 
+# Add GitHub's SSH host key to known_hosts (for www-data user)
+RUN mkdir -p /var/www/.ssh && chmod 700 /var/www/.ssh \
+    && ssh-keyscan -t ed25519 github.com >> /var/www/.ssh/known_hosts \
+    && chmod 644 /var/www/.ssh/known_hosts \
+    && chown -R www-data:www-data /var/www/.ssh
+
 USER www-data
 
 WORKDIR /var/www/html
