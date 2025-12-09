@@ -24,6 +24,13 @@ workflows:
       - ci-php/code-style:
           context: dockerhub-credentials
           dependencyCheckSumFile: "./composer.json"
+          pre-steps:
+            - run:
+                name: Add GitHub to known_hosts
+                command: |
+                  mkdir -p ~/.ssh
+                  ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
+                  chmod 644 ~/.ssh/known_hosts
           requires:
             - ci-php/install-dependencies
       - ci-php/static-analysis:
