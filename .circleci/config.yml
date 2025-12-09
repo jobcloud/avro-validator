@@ -24,7 +24,6 @@ workflows:
             - ci-php/install-dependencies
       - ci-php/code-style:
           context: dockerhub-credentials
-          dockerComposeFile: "./docker/docker-compose.yml"
           dependencyCheckSumFile: "./composer.json"
           requires:
             - ci-php/install-dependencies
