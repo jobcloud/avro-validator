@@ -14,16 +14,6 @@ use Jobcloud\Avro\Validator\Exception\ValidatorException;
 final readonly class Validator implements ValidatorInterface
 {
     /**
-     * @deprecated Use ValidationError::MISSING_FIELD->value instead. Will be removed in next major version.
-     */
-    public const string ERROR_TYPE_MISSING_FIELD = 'missingField';
-
-    /**
-     * @deprecated Use ValidationError::WRONG_TYPE->value instead. Will be removed in next major version.
-     */
-    public const string ERROR_TYPE_WRONG_TYPE = 'wrongType';
-
-    /**
      * Lower bound of integer values: -(1 << 31)
      */
     private const int INT_MIN_VALUE = -2147483648;
