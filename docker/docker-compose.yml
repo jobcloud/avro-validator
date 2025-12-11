@@ -1,8 +1,7 @@
 services:
   php:
     build:
-      context: ./
-      dockerfile: dev/php/Dockerfile
+      context: dev/php
       args:
         HOST_USER_ID: ${USER_ID}
     container_name: avro-validator
