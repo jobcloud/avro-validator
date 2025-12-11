@@ -21,12 +21,15 @@ RUN chown -R www-data:www-data /home/www-data && \
 RUN apk --no-cache upgrade && \
     apk --no-cache add bash git sudo openssh autoconf gcc g++ make shadow
 
-# we need support for users with ID higher than 65k, so instead of using this:
-#RUN adduser -u $HOST_USER_ID -D -H $HOST_USER
-# we do it manually
-RUN if [ -n "$HOST_USER_ID" ] && [ "$HOST_USER_ID" -lt 60001 ]; then \
-        usermod -u ${HOST_USER_ID} -o www-data; \
-    fi
+# Set host user id if given, to avoid permission conflicts in dev
+RUN /bin/bash -c 'if [ -n "$HOST_USER_ID" ] && [ "$HOST_USER_ID" -lt 60000 ]; then \
+        usermod -u ${HOST_USER_ID} www-data; \
+    fi'
+
+RUN usermod -s /bin/bash www-data && \
+    echo 'www-data ALL=(ALL) NOPASSWD: ALL' > '/etc/sudoers.d/www-data'
+
+COPY files/user-home /home/www-data
 
 # PHP: Install php extensions
 RUN pie install pecl/pcov
