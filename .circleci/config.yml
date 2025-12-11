@@ -89,7 +89,7 @@ workflows:
       - ci-php/install-dependencies-with-docker:
           context: dockerhub-credentials
           name: install-dependencies
-          sshFingerprint: "26:9f:79:7a:8d:bc:c7:42:07:ba:04:f1:99:f3:36:61"
+          sshFingerprint: "ae:e0:82:cc:cb:b5:fc:be:5a:0c:84:16:cd:48:db:0e"
           dependencyCheckSumFile: "./composer.json"
           requires:
             - build-composer-outdated-dependencies
@@ -102,7 +102,7 @@ jobs:
     machine: true
     steps:
       - ci-php/add-ssh-key-command:
-          sshFingerprint: "26:9f:79:7a:8d:bc:c7:42:07:ba:04:f1:99:f3:36:61"
+          sshFingerprint: "ae:e0:82:cc:cb:b5:fc:be:5a:0c:84:16:cd:48:db:0e"
       - ci-caching/run-docker-from-restored-caches:
           dependencyCheckSumFile: './composer.json'
       - ci-caching/execute-in-container:
