@@ -16,7 +16,7 @@ fix-code-style:
 
 code-style:
 	mkdir -p build/logs/phpcs
-	${PHPCS} --report-junit=build/logs/phpcs/junit.xml
+	${PHPCS} --parallel=`nproc`
 
 coverage:
 	mkdir -p build/logs/phpspec/coverage
