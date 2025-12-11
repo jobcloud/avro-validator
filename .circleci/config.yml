@@ -12,7 +12,6 @@ workflows:
           context: dockerhub-credentials
       - ci-php/install-dependencies:
           context: dockerhub-credentials
-          sshFingerprint: "26:9f:79:7a:8d:bc:c7:42:07:ba:04:f1:99:f3:36:61"
           dependencyCheckSumFile: "./composer.json"
           requires:
             - ci-caching/build-docker-images
