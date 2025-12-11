@@ -9,8 +9,7 @@ ARG HOST_USER_ID
 COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
 
 # PHP: Copy configuration files & remove dist files
-RUN mkdir /phpIni
-COPY dev/php/files/bin/ /usr/local/bin/
+COPY files/bin/ /usr/local/bin/
 
 # SYS: add ssh key (for GitHub)
 COPY --chown=www-data:www-data files/.ssh /home/www-data/.ssh
