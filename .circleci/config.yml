@@ -81,19 +81,13 @@ workflows:
       - ci-caching/build-docker-images:
           context: dockerhub-credentials
           name: build-docker-images
-      - ci-caching/build-docker-image:
-          context: dockerhub-credentials
-          name: build-composer-outdated-dependencies
-          dockerFolder: "./docker/dev/php"
-          requires:
-            - build-docker-images
-      - ci-php/install-dependencies-with-docker:
+      - ci-php/install-dependencies:
           context: dockerhub-credentials
           name: install-dependencies
-          sshFingerprint: "ae:e0:82:cc:cb:b5:fc:be:5a:0c:84:16:cd:48:db:0e"
+          dockerComposeFile: "./docker/docker-compose.yml"
           dependencyCheckSumFile: "./composer.json"
           requires:
-            - build-composer-outdated-dependencies
+            - build-docker-images
       - composer-outdated-dependencies:
           context: dockerhub-credentials
           requires:
@@ -102,8 +96,6 @@ jobs:
   composer-outdated-dependencies:
     machine: true
     steps:
-      - ci-php/add-ssh-key-command:
-          sshFingerprint: "ae:e0:82:cc:cb:b5:fc:be:5a:0c:84:16:cd:48:db:0e"
       - ci-caching/run-docker-from-restored-caches:
           dependencyCheckSumFile: './composer.json'
       - ci-caching/execute-in-container:
