@@ -69,14 +69,14 @@ workflows:
             - build-docker-images
             - install-dependencies
   monthly:
-    triggers:
-      - schedule:
-          cron: "0 8 1 * *"
-          filters:
-            branches:
-              only:
-                - main
-                - feat/CDA-1558/php-8.4-upgrade
+    # triggers:
+    #   - schedule:
+    #       cron: "0 8 1 * *"
+    #       filters:
+    #         branches:
+    #           only:
+    #             - main
+    #             - feat/CDA-1558/php-8.4-upgrade
     jobs:
       - ci-caching/build-docker-images:
           context: dockerhub-credentials
