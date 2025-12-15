@@ -76,6 +76,7 @@ workflows:
             branches:
               only:
                 - main
+                - feat/CDA-1558/php-8.4-upgrade
     jobs:
       - ci-caching/build-docker-images:
           context: dockerhub-credentials
