@@ -4,15 +4,15 @@
   "require": {
     "php": "^8.4",
     "ext-json": "*",
-    "symfony/console": "^7.2"
+    "symfony/console": "^7.2 || ^8.0 "
   },
   "require-dev": {
-    "ergebnis/phpstan-rules": "^2.5",
+    "ergebnis/phpstan-rules": "^2.12",
     "friends-of-phpspec/phpspec-code-coverage": "dev-master@dev",
     "phpspec/phpspec": "^8.0",
-    "phpstan/phpstan": "^1.9",
-    "phpstan/phpstan-deprecation-rules": "^1.2",
-    "phpstan/phpstan-strict-rules": "^1.6",
+    "phpstan/phpstan": "^2.1",
+    "phpstan/phpstan-deprecation-rules": "^2.0",
+    "phpstan/phpstan-strict-rules": "^2.0",
     "rregeer/phpunit-coverage-check": "^0.3",
     "squizlabs/php_codesniffer": "^4.0",
     "infection/infection": "^0.29",

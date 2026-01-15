@@ -73,7 +73,7 @@ final readonly class Validator implements ValidatorInterface
         foreach ($schemaFields as $rule) {
             $fieldName = $rule['name'];
 
-            if (false === array_key_exists($fieldName, $payload) && false == array_key_exists('default', $rule)) {
+            if (false === array_key_exists($fieldName, $payload) && false === array_key_exists('default', $rule)) {
                 $validationErrors[] = [
                     'path' => $path,
                     'type' => ValidationError::MISSING_FIELD->value,
