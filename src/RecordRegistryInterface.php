@@ -9,7 +9,7 @@ use Jobcloud\Avro\Validator\Exception\RecordRegistryException;
 interface RecordRegistryInterface
 {
     /**
-     * @return array<mixed>
+     * @return array<mixed>|null
      */
     public function getRecord(string $identifier): ?array;
 
