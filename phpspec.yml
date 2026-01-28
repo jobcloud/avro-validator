@@ -1,3 +1,8 @@
+suites:
+  default:
+    namespace: Jobcloud\Avro\Validator
+    spec_prefix: Spec
+
 extensions:
   LeanPHP\PhpSpec\CodeCoverage\CodeCoverageExtension:
     whitelist:

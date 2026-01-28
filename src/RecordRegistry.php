@@ -25,9 +25,26 @@ final class RecordRegistry implements RecordRegistryInterface
         }
     }
 
+    /**
+     * @throws RecordRegistryException
+     */
     public static function fromSchema(string $schema): self
     {
-        return new self([json_decode($schema, true)]);
+        try {
+            $decoded = json_decode($schema, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new RecordRegistryException(
+                sprintf('Failed to decode schema: %s', $e->getMessage()),
+            );
+        }
+
+        if (!is_array($decoded)) {
+            throw new RecordRegistryException(
+                sprintf('Schema must be a JSON object or array, %s given.', get_debug_type($decoded))
+            );
+        }
+
+        return new self(isset($decoded[0]) && is_array($decoded[0]) ? $decoded : [$decoded]);
     }
 
     /**

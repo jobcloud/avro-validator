@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\Jobcloud\Avro\Validator;
+namespace Spec\Jobcloud\Avro\Validator;
 
 use Jobcloud\Avro\Validator\Exception\InvalidSchemaException;
 use Jobcloud\Avro\Validator\Exception\MissingSchemaException;
