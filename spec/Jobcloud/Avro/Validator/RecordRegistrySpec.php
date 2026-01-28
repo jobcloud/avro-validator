@@ -1,6 +1,6 @@
 <?php
 
-namespace Spec\Jobcloud\Avro\Validator;
+namespace spec\Jobcloud\Avro\Validator;
 
 use Jobcloud\Avro\Validator\Exception\RecordRegistryException;
 use PhpSpec\ObjectBehavior;
