@@ -11,7 +11,7 @@ final class RecordRegistry implements RecordRegistryInterface
     /**
      * @var array<string, array<mixed>>
      */
-    private $records;
+    private array $records;
 
     /**
      * @param array<array<mixed>> $recordTypes
@@ -26,31 +26,41 @@ final class RecordRegistry implements RecordRegistryInterface
     }
 
     /**
-     * @param string $schema
-     * @return self
+     * @throws RecordRegistryException
      */
     public static function fromSchema(string $schema): self
     {
-        return new self([json_decode($schema, true)]);
+        try {
+            $decoded = json_decode($schema, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new RecordRegistryException(
+                sprintf('Failed to decode schema: %s', $e->getMessage()),
+            );
+        }
+
+        if (!is_array($decoded)) {
+            throw new RecordRegistryException(
+                sprintf('Schema must be a JSON object or array, %s given.', get_debug_type($decoded))
+            );
+        }
+
+        return new self(isset($decoded[0]) && is_array($decoded[0]) ? $decoded : [$decoded]);
     }
 
     /**
-     * @param string $identifier
      * @return array<mixed>|null
      */
+    #[\Override]
     public function getRecord(string $identifier): ?array
     {
-        if (isset($this->records[$identifier])) {
-            return $this->records[$identifier];
-        }
-
-        return null;
+        return $this->records[$identifier] ?? null;
     }
 
     /**
      * @param array<string, mixed> $record
      * @throws RecordRegistryException
      */
+    #[\Override]
     public function addRecord(array $record): void
     {
         $this->records[$this->determineRecordIdentifier($record)] = $record;
@@ -58,7 +68,6 @@ final class RecordRegistry implements RecordRegistryInterface
 
     /**
      * @param array<string, mixed> $record
-     * @return string
      * @throws RecordRegistryException
      */
     private function determineRecordIdentifier(array $record): string
@@ -73,8 +82,6 @@ final class RecordRegistry implements RecordRegistryInterface
             throw new RecordRegistryException('Provided schema does not have a name');
         }
 
-        $identifier .= $record['name'];
-
-        return $identifier;
+        return $identifier . $record['name'];
     }
 }

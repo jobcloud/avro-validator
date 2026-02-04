@@ -4,64 +4,45 @@ declare(strict_types=1);
 
 namespace Jobcloud\Avro\Validator;
 
+use Jobcloud\Avro\Validator\Enum\ValidationError;
 use Jobcloud\Avro\Validator\Exception\InvalidSchemaException;
 use Jobcloud\Avro\Validator\Exception\MissingSchemaException;
 use Jobcloud\Avro\Validator\Exception\RecordRegistryException;
 use Jobcloud\Avro\Validator\Exception\UnsupportedTypeException;
 use Jobcloud\Avro\Validator\Exception\ValidatorException;
 
-final class Validator implements ValidatorInterface
+final readonly class Validator implements ValidatorInterface
 {
     /**
-     * @var string
+     * Lower bound of integer values: -(1 << 31)
      */
-    public const ERROR_TYPE_MISSING_FIELD = 'missingField';
+    private const int INT_MIN_VALUE = -2147483648;
 
     /**
-     * @var string
+     * Upper bound of integer values: (1 << 31) - 1
      */
-    public const ERROR_TYPE_WRONG_TYPE = 'wrongType';
+    private const int INT_MAX_VALUE = 2147483647;
 
     /**
-     * @var int lower bound of integer values: -(1 << 31)
+     * Lower bound of long values: -(1 << 63)
      */
-    private const INT_MIN_VALUE = -2147483648;
+    private const float LONG_MIN_VALUE = -9223372036854775808;
 
     /**
-     * @var int upper bound of integer values: (1 << 31) - 1
+     * Upper bound of long values: (1 << 63) - 1
      */
-    private const INT_MAX_VALUE = 2147483647;
+    private const int LONG_MAX_VALUE = 9223372036854775807;
 
-    /**
-     * @var float lower bound of long values: -(1 << 63)
-     */
-    private const LONG_MIN_VALUE = -9223372036854775808;
-
-    /**
-     * @var int upper bound of long values: (1 << 63) - 1
-     */
-    private const LONG_MAX_VALUE = 9223372036854775807;
-
-    /**
-     * @var RecordRegistryInterface
-     */
-    private $recordRegistry;
-
-    /**
-     * @param RecordRegistryInterface $recordRegistry
-     */
-    public function __construct(RecordRegistryInterface $recordRegistry)
+    public function __construct(private RecordRegistryInterface $recordRegistry)
     {
-        $this->recordRegistry = $recordRegistry;
     }
 
     /**
-     * @param string $payload
-     * @param string $recordType
      * @return array<array<mixed>>
      * @throws ValidatorException
      * @throws RecordRegistryException
      */
+    #[\Override]
     public function validate(string $payload, string $recordType): array
     {
         $decodedPayload = json_decode($payload, true);
@@ -82,7 +63,6 @@ final class Validator implements ValidatorInterface
     /**
      * @param array<array<mixed>> $schemaFields
      * @param array<mixed> $payload
-     * @param string $path
      * @param array<array<mixed>> $validationErrors
      * @return array<array<mixed>>
      * @throws UnsupportedTypeException
@@ -93,10 +73,10 @@ final class Validator implements ValidatorInterface
         foreach ($schemaFields as $rule) {
             $fieldName = $rule['name'];
 
-            if (false === array_key_exists($fieldName, $payload) && false == array_key_exists('default', $rule)) {
+            if (false === array_key_exists($fieldName, $payload) && false === array_key_exists('default', $rule)) {
                 $validationErrors[] = [
                     'path' => $path,
-                    'type' => self::ERROR_TYPE_MISSING_FIELD,
+                    'type' => ValidationError::MISSING_FIELD->value,
                     'message' => sprintf('Field "%s" is missing in payload', $fieldName),
                 ];
                 continue;
@@ -109,11 +89,10 @@ final class Validator implements ValidatorInterface
             if (false === $this->checkFieldValueBeOneOf($types, $fieldValue, $currentPath, $validationErrors)) {
                 $validationErrors[] = $this->createValidationError(
                     $currentPath,
-                    self::ERROR_TYPE_WRONG_TYPE,
+                    ValidationError::WRONG_TYPE->value,
                     $types,
                     $fieldValue
                 );
-                continue;
             }
         }
 
@@ -122,7 +101,6 @@ final class Validator implements ValidatorInterface
 
     /**
      * @param array<string|array<string, mixed>> $types
-     * @return string
      */
     private function formatTypeList(array $types): string
     {
@@ -139,27 +117,22 @@ final class Validator implements ValidatorInterface
 
     /**
      * @param array<string|array<string, mixed>> $types
-     * @param mixed $fieldValue
-     * @param string $currentPath
      * @param array<array<mixed>> $validationErrors
-     * @return bool
      * @throws UnsupportedTypeException
      * @throws RecordRegistryException
      */
     private function checkFieldValueBeOneOf(
         array $types,
-        $fieldValue,
+        mixed $fieldValue,
         string $currentPath,
         array &$validationErrors
     ): bool {
         $scalarTypes = [
             'null' => 'is_null',
-            'int' => static function ($value): bool {
-                return is_int($value) && self::INT_MIN_VALUE <= $value && $value <= self::INT_MAX_VALUE;
-            },
-            'long' => static function ($value): bool {
-                return is_int($value) && self::LONG_MIN_VALUE <= $value && $value <= self::LONG_MAX_VALUE;
-            },
+            'int' => static fn($value): bool => is_int($value)
+                && self::INT_MIN_VALUE <= $value && $value <= self::INT_MAX_VALUE,
+            'long' => static fn($value): bool => is_int($value)
+                && self::LONG_MIN_VALUE <= $value && $value <= self::LONG_MAX_VALUE,
             'string' => 'is_string',
             'boolean' => 'is_bool',
             'float' => 'is_float',
@@ -195,7 +168,7 @@ final class Validator implements ValidatorInterface
                         if (false === $this->checkFieldValueBeOneOf($types, $value, $itemPath, $validationErrors)) {
                             $validationErrors[] = $this->createValidationError(
                                 $itemPath,
-                                self::ERROR_TYPE_WRONG_TYPE,
+                                ValidationError::WRONG_TYPE->value,
                                 $types,
                                 $value
                             );
@@ -242,7 +215,6 @@ final class Validator implements ValidatorInterface
 
     /**
      * @param array<array<string, mixed>> $validationErrors
-     * @return bool
      */
     private function hasOnlyMissingFields(array $validationErrors): bool
     {
@@ -251,7 +223,7 @@ final class Validator implements ValidatorInterface
         }
 
         foreach ($validationErrors as $validationError) {
-            if (self::ERROR_TYPE_MISSING_FIELD !== $validationError['type']) {
+            if (ValidationError::MISSING_FIELD->value !== $validationError['type']) {
                 return false;
             }
         }
@@ -260,13 +232,10 @@ final class Validator implements ValidatorInterface
     }
 
     /**
-     * @param string $path
-     * @param string $errorType
      * @param array<string> $types
-     * @param mixed $value
      * @return array<string, mixed>
      */
-    private function createValidationError(string $path, string $errorType, array $types, $value): array
+    private function createValidationError(string $path, string $errorType, array $types, mixed $value): array
     {
         return [
             'path' => $path,
@@ -280,11 +249,7 @@ final class Validator implements ValidatorInterface
         ];
     }
 
-    /**
-     * @param mixed $value
-     * @return string
-     */
-    private function getType($value): string
+    private function getType(mixed $value): string
     {
         $type = gettype($value);
 
@@ -295,11 +260,7 @@ final class Validator implements ValidatorInterface
         return $type;
     }
 
-    /**
-     * @param mixed $type
-     * @return string
-     */
-    private function getTypeAsString($type): string
+    private function getTypeAsString(mixed $type): string
     {
         if (!is_array($type)) {
             return $type;
